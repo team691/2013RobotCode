@@ -5,7 +5,7 @@ public class Values {
     public static final int SIDECAR_1 = 1;
     public static final int SIDECAR_2 = 2;
     
-    public static final int JOYSTICK  = 1;
+    public static final int DRIVE_JOYSTICK  = 2;
     
     public static final int FR_DRIVE_VICTOR     = 1;
     public static final int FL_DRIVE_VICTOR     = 10;

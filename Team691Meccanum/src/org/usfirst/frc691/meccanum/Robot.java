@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 public class Robot extends SimpleRobot {
 	
     //Joysticks
-    Joystick joy = new Joystick(Values.JOYSTICK);
+    Joystick joy = new Joystick(Values.DRIVE_JOYSTICK);
 
     //Meccanum drive
     Meccanum drive;
