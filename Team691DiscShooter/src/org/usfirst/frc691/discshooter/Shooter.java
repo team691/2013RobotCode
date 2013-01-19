@@ -1,6 +1,7 @@
 package org.usfirst.frc691.discshooter;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
@@ -22,13 +23,25 @@ public class Shooter {
 
         tilt = new Victor(tiltVic);
     }
-
-    public void run() {
+    
+    public void shoot(Joystick joy) {
+        if (joy.getRawButton(3)) {
+            setSpeed(true);     //Add 50 RPM
+        } else if (joy.getRawButton(2)) {
+            setSpeed(false);    //Subtract 50 RPM
+        } else if (joy.getRawButton(1)) {
+            shooter.set(0.0);   //Stop
+        } else if(joy.getRawButton(4)){
+            shooter.set(shooterRPM);    //Full Speed
+        } else {
+            shooter.set(shooterRPM / 2);    //Idle
+        }
+        
         shooter.run();
+        tilt.set(joy.getRawAxis(2));
     }
 
-    //TODO: Adjust this for prototype
-    public void setSpeed(boolean speedUp) {
+    public void setSpeed(boolean speedUp) { //TODO: Remove for final robot! Prototype only!
         if (speedUp) {
             targetRPM += 50;
             shooter.set(targetRPM);
@@ -38,16 +51,8 @@ public class Shooter {
         }
     }
 
-    public void tilt(double speed) {
-        tilt.set(speed);
-    }
-
     public double getSpeed() {  //TODO: Remove for final robot! Prototype only!
         return targetRPM;
-    }
-    
-    public void start() {
-        shooter.set(shooterRPM);
     }
 
     public void stop() {
