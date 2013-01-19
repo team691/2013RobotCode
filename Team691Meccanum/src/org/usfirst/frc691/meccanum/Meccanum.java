@@ -3,6 +3,7 @@ package org.usfirst.frc691.meccanum;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 
 
@@ -11,10 +12,10 @@ public class Meccanum {
     //Victors
     private int[] vicSlot;
     private int[] vicChannel;
-    private Victor frVic;
-    private Victor flVic;
-    private Jaguar brVic;
-    private Jaguar blVic;
+    private SpeedController frVic;
+    private SpeedController flVic;
+    private SpeedController brVic;
+    private SpeedController blVic;
 
     //Encoders
     private int[] encSlot;
