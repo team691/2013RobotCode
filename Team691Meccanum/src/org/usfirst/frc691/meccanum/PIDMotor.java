@@ -1,46 +1,33 @@
 package org.usfirst.frc691.meccanum;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Jaguar;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.SpeedController;
 
 public class PIDMotor {
 
     //Init data
-    private Victor v;
-    private Jaguar j;
-    private Encoder e;
-    private boolean victor = true;
+    private SpeedController motor;
+    private Encoder enc;
     //PIDMotor input
     private double targetRPM = 0.0;
     private double currentRPM = 0.0;
     private double error = 0.0;
+    private double deltaTime = 0.0;
     //PIDMotor scale
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
     //PIDMotor out
-    private double pout = 0.0;
-    private double iout = 0.0;
-    private double dout = 0.0;
+    private double integral = 0.0;
+    private double derivative = 0.0;
     private double out = 0.0;
     //PIDMotor loop
-    private double lasterror = 0.0;
+    private double lastError = 0.0;
     private long lastTime = 0;
 
-    public PIDMotor(Victor vic, Encoder enc, double kp, double ki, double kd) {
-        v = vic;
-        e = enc;
-        victor = true;
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-    }
-
-    public PIDMotor(Jaguar jag, Encoder enc, double kp, double ki, double kd) {
-        j = jag;
-        e = enc;
-        victor = false;
+    public PIDMotor(SpeedController motor, Encoder enc, double kp, double ki, double kd) {
+        this.motor = motor;
+        this.enc = enc;
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
@@ -48,20 +35,16 @@ public class PIDMotor {
 
     //PIDMotor control
     public void run() {
-        currentRPM = e.getRate() * 60;
-        error = targetRPM - currentRPM;		
+        currentRPM = enc.getRate() * 60;
+        error = targetRPM - currentRPM;
+        deltaTime = System.currentTimeMillis() - lastTime;
 
-        pout = error;
-        iout += error;
-        dout = (error - lasterror)/(System.currentTimeMillis() - lastTime);
-        out = (kp * pout) + (ki * iout) + (kd * dout);
-        if(victor){
-            v.set(out);
-        } else {
-            j.set(out);
-        }
+        integral += error * deltaTime;
+        derivative = (error - lastError)/deltaTime;
+        out = (kp * error) + (ki * integral) + (kd * derivative);
+        motor.set(out);
 
-        lasterror = error;
+        lastError = error;
         lastTime = System.currentTimeMillis();
     }
 

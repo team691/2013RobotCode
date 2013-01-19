@@ -7,8 +7,7 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 public class Robot extends SimpleRobot {
 	
     //Joysticks
-    Joystick RJoy = new Joystick(Values.RIGHT_JOYSTICK);
-    Joystick LJoy = new Joystick(Values.LEFT_JOYSTICK);
+    Joystick joy = new Joystick(Values.JOYSTICK);
 
     //Meccanum drive
     Meccanum drive;
@@ -28,7 +27,7 @@ public class Robot extends SimpleRobot {
 	
     public void operatorControl() {
         while(isEnabled() && isOperatorControl()) {
-            drive.moveSingle(LJoy);
+            drive.move(joy);
         }
     }
 }

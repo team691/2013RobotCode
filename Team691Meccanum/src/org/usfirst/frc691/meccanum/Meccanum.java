@@ -85,6 +85,10 @@ public class Meccanum {
         flEnc.setDistancePerPulse(360/encCount[1]);
         brEnc.setDistancePerPulse(360/encCount[2]);
         blEnc.setDistancePerPulse(360/encCount[3]);
+        frEnc.start();
+        flEnc.start();
+        brEnc.start();
+        blEnc.start();
     }
 
     private void initPID() {
@@ -94,14 +98,14 @@ public class Meccanum {
         bl = new PIDMotor(blVic, blEnc, kp[3], ki[3], kd[3]);
     }
 
-    public void move(Joystick rjoy, Joystick ljoy) {
-        forward = rjoy.getRawAxis(2);
+    public void moveDual(Joystick rjoy, Joystick ljoy) {
+        forward = ljoy.getRawAxis(2);
         clockwise = rjoy.getRawAxis(1);
         right = ljoy.getRawAxis(1);
         update(forward, right, clockwise);
     }
 
-    public void moveSingle(Joystick joy) {
+    public void move(Joystick joy) {
         forward = joy.getRawAxis(2);
         clockwise = joy.getRawAxis(3);
         right = joy.getRawAxis(1);
