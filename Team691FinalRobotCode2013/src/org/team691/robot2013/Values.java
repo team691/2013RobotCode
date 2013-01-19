@@ -63,6 +63,7 @@ public class Values {
     public static final double[][] DRIVE_PID   = {DRIVE_PID_KP, DRIVE_PID_KI, DRIVE_PID_KD};
     
     public static final int SHOOTER_VICTOR          = 0;
+    public static final int SHOOTER_VICTOR_SIDECAR  = 0;
     
     public static final int SHOOTER_ENCODER_A       = 0;
     public static final int SHOOTER_ENCODER_B       = 0;
@@ -70,5 +71,9 @@ public class Values {
     public static final int SHOOTER_ENCODER_COUNT   = 0;
     public static final int[] SHOOTER_ENCODER       = {SHOOTER_ENCODER_SIDECAR, SHOOTER_ENCODER_A, SHOOTER_ENCODER_B, SHOOTER_ENCODER_COUNT};
     
-    public static final int SHOOTER_TILT_VICTOR     = 0;
+    public static final int SHOOTER_TILT_VICTOR         = 0;
+    public static final int SHOOTER_TILT_VICTOR_SIDECAR = 0;
+    
+    public static final int UPTAKE_VICTOR           = 0;
+    public static final int UPTAKE_VICTOR_SIDECAR   = 0;
 }

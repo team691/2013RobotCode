@@ -16,12 +16,12 @@ public class Shooter {
     private static final double ki = 0.0;
     private static final double kd = 0.0;
 
-    public Shooter(int shooterVic, int[] shooterEnc, int tiltVic) {
+    public Shooter(int shooterVic, int shooterSidecar, int[] shooterEnc, int tiltVic, int tiltVicSidecar) {
         Encoder shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2]);
         shooterEncoder.setDistancePerPulse(360 / shooterEnc[3]);
-        shooter = new PIDMotor(new Victor(shooterVic), shooterEncoder, kp, ki, kd);
+        shooter = new PIDMotor(new Victor(shooterVic, shooterSidecar), shooterEncoder, kp, ki, kd);
 
-        tilt = new Victor(tiltVic);
+        tilt = new Victor(tiltVic, tiltVicSidecar);
     }
     
     public void shoot(Joystick joy) {
@@ -31,7 +31,7 @@ public class Shooter {
             setSpeed(false);    //Subtract 50 RPM
         } else if (joy.getRawButton(1)) {
             shooter.set(0.0);   //Stop
-        } else if(joy.getRawButton(4)){
+        } else if(joy.getRawButton(4) || joy.getRawButton(5)){
             shooter.set(shooterRPM);    //Full Speed
         } else {
             shooter.set(shooterRPM / 2);    //Idle

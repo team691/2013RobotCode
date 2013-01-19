@@ -12,8 +12,9 @@ public class Robot extends SimpleRobot {
     //Meccanum drive
     Meccanum drive;
     
-    //Shooter
+    //Shooter & Uptake
     Shooter shooter;
+    Uptake uptake;
     
     /**
      * This function is called once each time the robot enters autonomous mode.
@@ -35,9 +36,14 @@ public class Robot extends SimpleRobot {
         
         shooter = new Shooter(
                 Values.SHOOTER_VICTOR,
+                Values.SHOOTER_VICTOR_SIDECAR,
                 Values.SHOOTER_ENCODER,
-                Values.SHOOTER_TILT_VICTOR);
+                Values.SHOOTER_TILT_VICTOR,
+                Values.SHOOTER_TILT_VICTOR_SIDECAR);
         shooter.stop();
+        
+        uptake = new Uptake(Values.UPTAKE_VICTOR_SIDECAR, Values.UPTAKE_VICTOR);
+        uptake.stop();
     }
     
     /**
@@ -54,6 +60,7 @@ public class Robot extends SimpleRobot {
         while(isEnabled() && isOperatorControl()) {
             drive.move(driveJoy);      
             shooter.shoot(shooterJoy);
+            uptake.feed(shooterJoy);
         }
     }
 }
