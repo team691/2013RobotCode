@@ -27,7 +27,8 @@ public class Robot extends SimpleRobot {
 	
     public void operatorControl() {
         while(isEnabled() && isOperatorControl()) {
-            drive.move(joy);
+            drive.update(joy.getRawAxis(2), joy.getRawAxis(1), joy.getRawAxis(3));
+                       //Forward            Right              Clockwise
         }
     }
 }
