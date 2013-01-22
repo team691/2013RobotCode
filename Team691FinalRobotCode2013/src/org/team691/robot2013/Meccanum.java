@@ -3,18 +3,19 @@ package org.team691.robot2013;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 
 
 public class Meccanum {
 	
-    //Victors
-    private int[] vicSlot;
-    private int[] vicChannel;
-    private Victor frVic;
-    private Victor flVic;
-    private Jaguar brVic;
-    private Jaguar blVic;
+    //Speed Controllers
+    private int[] motorSlot;
+    private int[] motorChannel;
+    private SpeedController frVic;
+    private SpeedController flVic;
+    private SpeedController brVic;
+    private SpeedController blVic;
 
     //Encoders
     private int[] encSlot;
@@ -35,9 +36,6 @@ public class Meccanum {
     private PIDMotor bl;
 
     //Meccanum control
-    private double forward = 0.0;
-    private double right = 0.0;
-    private double clockwise = 0.0;
     private double frVel = 0.0;
     private double flVel = 0.0;
     private double brVel = 0.0;
@@ -48,8 +46,8 @@ public class Meccanum {
     private boolean useEncoders = true;
 
     public Meccanum(int[] vicSlot, int[] vicChannel, int[] encSlot, int[][] encPort, int[] encCount, double[][] pid) {
-        this.vicSlot = vicSlot;
-        this.vicChannel = vicChannel;
+        this.motorSlot = vicSlot;
+        this.motorChannel = vicChannel;
         this.encSlot = encSlot;
         this.encPort = encPort;
         this.encCount = encCount;
@@ -63,17 +61,17 @@ public class Meccanum {
     }
 
     public Meccanum(int[] vicSlot, int[] vicChannel) {
-        this.vicSlot = vicSlot;
-        this.vicChannel = vicChannel;
+        this.motorSlot = vicSlot;
+        this.motorChannel = vicChannel;
         useEncoders = false;
         init();
     }
 
     private void init() {
-        frVic = new Victor(vicSlot[0], vicChannel[0]);
-        flVic = new Victor(vicSlot[1], vicChannel[1]);
-        brVic = new Jaguar(vicSlot[2], vicChannel[2]);
-        blVic = new Jaguar(vicSlot[3], vicChannel[3]);
+        frVic = new Victor(motorSlot[0], motorChannel[0]);
+        flVic = new Victor(motorSlot[1], motorChannel[1]);
+        brVic = new Jaguar(motorSlot[2], motorChannel[2]);
+        blVic = new Jaguar(motorSlot[3], motorChannel[3]);
     }
 
     private void initEnc() {
@@ -99,17 +97,11 @@ public class Meccanum {
     }
 
     public void moveDual(Joystick rjoy, Joystick ljoy) {
-        forward = ljoy.getRawAxis(2);
-        clockwise = rjoy.getRawAxis(1);
-        right = ljoy.getRawAxis(1);
-        update(forward, right, clockwise);
+        update(ljoy.getRawAxis(2), ljoy.getRawAxis(1), rjoy.getRawAxis(1));
     }
 
     public void move(Joystick joy) {
-        forward = joy.getRawAxis(2);
-        clockwise = joy.getRawAxis(3);
-        right = joy.getRawAxis(1);
-        update(forward, right, clockwise);
+        update(joy.getRawAxis(2), joy.getRawAxis(1), joy.getRawAxis(3));
     }
 
     public void update(double forward, double right, double clockwise) {
