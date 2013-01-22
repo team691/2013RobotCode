@@ -1,61 +1,42 @@
 package org.usfirst.frc691.discshooter;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
 
-    private PIDMotor shooter;
-    private Victor tilt;
-    private static final double shooterRPM = 0.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
-    private double targetRPM = 0.0;	//TODO: Remove for final robot! Prototype only!
-    
-    //Shooter PID
-    private static final double kp = 0.0;
-    private static final double ki = 0.0;
-    private static final double kd = 0.0;
+    private PIDMotor shooterMotor;
+    private PIDMotor tiltMotor;
 
-    public Shooter(int shooterVic, int shooterSidecar, int[] shooterEnc, int tiltVic, int tiltVicSidecar) {
+    public Shooter(int shooterVic, int shooterSidecar, int[] shooterEnc, double[] shooterPID, int tiltVic, int tiltVicSidecar, int[] tiltEnc, double[] tiltPID) {
         Encoder shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2]);
         shooterEncoder.setDistancePerPulse(360 / shooterEnc[3]);
-        shooter = new PIDMotor(new Victor(shooterVic, shooterSidecar), shooterEncoder, kp, ki, kd);
+        shooterMotor = new PIDMotor(new Victor(shooterVic, shooterSidecar), shooterEncoder, shooterPID[0], shooterPID[1], shooterPID[2]);
 
-        tilt = new Victor(tiltVic, tiltVicSidecar);
+        Encoder tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2]);
+        tiltEncoder.setDistancePerPulse(360 / tiltEnc[3]);
+        //TODO: Make PID position, not velocity!
+        tiltMotor = new PIDMotor(new Victor(tiltVic, tiltVicSidecar), tiltEncoder, tiltPID[0], tiltPID[1], tiltPID[2]);
     }
     
-    public void shoot(Joystick joy) {
-        if (joy.getRawButton(3)) {
-            setSpeed(true);     //Add 50 RPM
-        } else if (joy.getRawButton(2)) {
-            setSpeed(false);    //Subtract 50 RPM
-        } else if (joy.getRawButton(1)) {
-            shooter.set(0.0);   //Stop
-        } else if(joy.getRawButton(4) || joy.getRawButton(5)){
-            shooter.set(shooterRPM);    //Full Speed
-        } else {
-            shooter.set(shooterRPM / 2);    //Idle
-        }
-        
-        shooter.run();
-        tilt.set(joy.getRawAxis(2));
+    public void update(double shooterSpeed, double tiltPos) {
+        shooterMotor.run(shooterSpeed);
+        tiltMotor.run(tiltPos);
     }
-
-    public void setSpeed(boolean speedUp) { //TODO: Remove for final robot! Prototype only!
-        if (speedUp) {
-            targetRPM += 50;
-            shooter.set(targetRPM);
-        } else {
-            targetRPM -= 50;
-            shooter.set(targetRPM);
-        }
+    
+    public void shoot(double shooterSpeed) {
+        shooterMotor.run(shooterSpeed);
+    }
+    
+    public void tilt(double tiltPos){
+        tiltMotor.run(tiltPos);
     }
 
     public double getSpeed() {  //TODO: Remove for final robot! Prototype only!
-        return targetRPM;
+        return shooterMotor.get();
     }
 
     public void stop() {
-        shooter.set(0.0);
+        shooterMotor.set(0.0);
     }
 }

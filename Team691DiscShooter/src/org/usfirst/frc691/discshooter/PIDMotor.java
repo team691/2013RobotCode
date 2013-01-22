@@ -47,8 +47,18 @@ public class PIDMotor {
         lastError = error;
         lastTime = System.currentTimeMillis();
     }
-
+    
+    //PIDMotor control
+    public void run(double speed) {
+        set(speed);
+        run();
+    }
+    
     public void set(double rpm) {
     	targetRPM = rpm;
+    }
+    
+    public double get() {   //TODO: Do not mirror this class! Remove this function after prototype!
+        return targetRPM;
     }
 }
