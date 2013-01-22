@@ -5,15 +5,15 @@ public class Values {
     public static final int SIDECAR_1 = 1;
     public static final int SIDECAR_2 = 2;
     
-    public static final int DRIVE_JOYSTICK  = 2;
+    public static final int DRIVE_JOYSTICK      = 2;
     
     public static final int FR_DRIVE_VICTOR     = 1;
     public static final int FL_DRIVE_VICTOR     = 10;
     public static final int BR_DRIVE_VICTOR     = 2;
     public static final int BL_DRIVE_VICTOR     = 8; 
-    public static final int[] DRIVE_VICTOR_SIDECARS = {1, 1, 1, 1};
-    												 //FR FL BR BL
-    public static final int[] DRIVE_VICTORS         = {FR_DRIVE_VICTOR, FL_DRIVE_VICTOR, BR_DRIVE_VICTOR, BL_DRIVE_VICTOR};
+    public static final int[] DRIVE_VICTOR_SIDECARS  = {1, 1, 1, 1};
+    												  //FR FL BR BL
+    public static final int[] DRIVE_VICTORS          = {FR_DRIVE_VICTOR, FL_DRIVE_VICTOR, BR_DRIVE_VICTOR, BL_DRIVE_VICTOR};
     
     public static final int FR_DRIVE_ENCODER_A  	 = 0; //1
     public static final int FR_DRIVE_ENCODER_B  	 = 0; //1
@@ -36,11 +36,11 @@ public class Values {
     public static final int BL_DRIVE_ENCODER_COUNT 	 = 0;
     
     public static final int[][] DRIVE_ENCODERS 		 = {
-                                                                {FR_DRIVE_ENCODER_A, FR_DRIVE_ENCODER_B},
-                                                                {FL_DRIVE_ENCODER_A, FL_DRIVE_ENCODER_B},
-                                                                {BR_DRIVE_ENCODER_A, BR_DRIVE_ENCODER_B},
-                                                                {BL_DRIVE_ENCODER_A, BL_DRIVE_ENCODER_B},
-                                                          };
+                                                            {FR_DRIVE_ENCODER_A, FR_DRIVE_ENCODER_B},
+                                                            {FL_DRIVE_ENCODER_A, FL_DRIVE_ENCODER_B},
+                                                            {BR_DRIVE_ENCODER_A, BR_DRIVE_ENCODER_B},
+                                                            {BL_DRIVE_ENCODER_A, BL_DRIVE_ENCODER_B},
+                                                       };
     public static final int[] DRIVE_ENCODER_SIDECARS = {FR_DRIVE_ENCODER_SIDECAR, FL_DRIVE_ENCODER_SIDECAR, BR_DRIVE_ENCODER_SIDECAR, BL_DRIVE_ENCODER_SIDECAR};
     public static final int[] DRIVE_ENCODER_COUNTS   = {FR_DRIVE_ENCODER_COUNT, FL_DRIVE_ENCODER_COUNT, BR_DRIVE_ENCODER_COUNT, BL_DRIVE_ENCODER_COUNT};
     
