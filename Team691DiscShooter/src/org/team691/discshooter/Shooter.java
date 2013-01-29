@@ -1,4 +1,4 @@
-package org.usfirst.frc691.discshooter;
+package org.team691.discshooter;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
