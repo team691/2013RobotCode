@@ -9,7 +9,6 @@ public class Robot extends SimpleRobot {
 
     //Driver station I/O
     Joystick joy = new Joystick(Values.SHOOTER_JOYSTICK);
-    DriverStationLCD dslcd = DriverStationLCD.getInstance();
     
     //Shooter, Uptake, & Intake
     Shooter shooter;
@@ -48,10 +47,6 @@ public class Robot extends SimpleRobot {
         while (isEnabled() && isOperatorControl()) {
             if (joy.getRawButton(1)) {
                 shooter.shoot(Values.SHOOTER_RPM);      //Full Speed
-            } else if (joy.getRawButton(3)) {
-                shooter.shoot(shooter.getSpeed() + 50); //Add 50 RPM
-            } else if (joy.getRawButton(2)) {
-                shooter.shoot(shooter.getSpeed() - 50); //Subtract 50 RPM
             } else if(joy.getRawButton(4) || joy.getRawButton(5)){
                 shooter.stop();                         //Stop
             } else {
@@ -82,9 +77,6 @@ public class Robot extends SimpleRobot {
             } else {
                 intake.grab(Relay.Value.kOff);          //Turn off intake
             }
-            
-            dslcd.println(DriverStationLCD.Line.kUser1, 1, Double.toString(shooter.getSpeed()));
-            dslcd.updateLCD();
         }
     }
 }

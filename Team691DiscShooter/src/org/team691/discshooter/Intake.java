@@ -20,7 +20,7 @@ public class Intake {
     public Intake(int armPort, int armSidecar, int[] armEnc, double[] armPID, int wristPort, int wristSidecar, int wristLimit, int intakePort, int intakeSidecar){
         Encoder armEncoder = new Encoder(armEnc[0], armEnc[1], armEnc[0], armEnc[2]);
         armEncoder.setDistancePerPulse(360 / armEnc[3]);
-        arm = new PIDMotor(new Victor(armPort, armSidecar), armEncoder, armPID[0], armPID[1], armPID[2]);
+        arm = new PIDMotor("Arm", false, new Victor(armPort, armSidecar), armEncoder, armPID[0], armPID[1], armPID[2], armPID[3]);
         
         wrist = new Relay(wristPort, wristSidecar);
         flipLimit = new DigitalInput(wristSidecar, wristLimit);

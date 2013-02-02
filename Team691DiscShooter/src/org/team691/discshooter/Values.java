@@ -9,12 +9,14 @@ public class Values {
     public static final double SHOOTER_KP    = 0.0;
     public static final double SHOOTER_KI    = 0.0;
     public static final double SHOOTER_KD    = 0.0;
-    public static final double[] SHOOTER_PID = {SHOOTER_KP, SHOOTER_KI, SHOOTER_KD};    
+    public static final double SHOOTER_SCALAR = 0.0;
+    public static final double[] SHOOTER_PID = {SHOOTER_KP, SHOOTER_KI, SHOOTER_KD, SHOOTER_SCALAR};    
     
     public static final double SHOOTER_TILT_KP    = 0.0;
     public static final double SHOOTER_TILT_KI    = 0.0;
     public static final double SHOOTER_TILT_KD    = 0.0;
-    public static final double[] SHOOTER_TILT_PID = {SHOOTER_KP, SHOOTER_KI, SHOOTER_KD};    
+    public static final double SHOOTER_TILT_SCALAR = 0.0;
+    public static final double[] SHOOTER_TILT_PID = {SHOOTER_TILT_KP, SHOOTER_TILT_KI, SHOOTER_TILT_KD, SHOOTER_TILT_SCALAR};    
     
     public static final int SHOOTER_JOYSTICK        = 2;
     
@@ -51,7 +53,8 @@ public class Values {
     public static final double INTAKE_ARM_KP    = 0.0;
     public static final double INTAKE_ARM_KI    = 0.0;
     public static final double INTAKE_ARM_KD    = 0.0;
-    public static final double[] INTAKE_ARM_PID = {INTAKE_ARM_KP, INTAKE_ARM_KI, INTAKE_ARM_KD};
+    public static final double INTAKE_ARM_SCALAR = 0.0;
+    public static final double[] INTAKE_ARM_PID = {INTAKE_ARM_KP, INTAKE_ARM_KI, INTAKE_ARM_KD, INTAKE_ARM_SCALAR};
     
     public static final int INTAKE_WRIST_RELAY          = 0;
     public static final int INTAKE_WRIST_RELAY_SIDECAR  = 0;
