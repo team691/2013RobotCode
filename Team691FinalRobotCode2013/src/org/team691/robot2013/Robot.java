@@ -12,6 +12,9 @@ public class Robot extends SimpleRobot {
     
     //Meccanum drive
     Meccanum drive;
+    double forward = 0.0;
+    double right = 0.0;
+    double clockwise = 0.0;
     
     //Shooter, Uptake, & Intake
     Shooter shooter;
@@ -25,15 +28,16 @@ public class Robot extends SimpleRobot {
         driveJoy = new Joystick(Values.DRIVE_JOYSTICK);
         driveJoy = new Joystick(Values.SHOOTER_JOYSTICK);
         
-        drive = new Meccanum(Values.DRIVE_VICTOR_SIDECARS, Values.DRIVE_VICTORS); //No encoders
-        /*drive = new Meccanum(
+        //drive = new Meccanum(Values.DRIVE_VICTOR_SIDECARS, Values.DRIVE_VICTORS); //No encoders
+        drive = new Meccanum(
                         Values.DRIVE_VICTOR_SIDECARS,
                         Values.DRIVE_VICTORS,
                         Values.DRIVE_ENCODER_SIDECARS,
                         Values.DRIVE_ENCODERS,
-                        Values.DRIVE_ENCODER_COUNTS,
+                        Values.DRIVE_ENCODER_DISTANCES_PER_PULSE,
+                        Values.DRIVE_ENCODER_REVERSES,
                         Values.DRIVE_PID
-        ); */	//With encoders
+        );	//With encoders
         drive.stop();
         
         shooter = new Shooter(
@@ -75,8 +79,25 @@ public class Robot extends SimpleRobot {
      */
     public void operatorControl() {
         while(isEnabled() && isOperatorControl()) {
-            drive.update(driveJoy.getRawAxis(2), driveJoy.getRawAxis(1), driveJoy.getRawAxis(3));
-                       //Forward            Right              Clockwise
+            if(Math.abs(driveJoy.getRawAxis(2)) < 0.2) {
+                forward = 0.0;
+            } else {
+                forward = driveJoy.getRawAxis(2);
+            }
+            if(Math.abs(driveJoy.getRawAxis(1)) < 0.2) {
+                right = 0.0;
+            } else {
+                right = driveJoy.getRawAxis(1);
+            }
+            if(Math.abs(driveJoy.getRawAxis(3)) < 0.2) {
+                clockwise = 0.0;
+            } else {    // if(Math.abs(joy.getRawAxis(3)) < 0.75) {
+                clockwise = driveJoy.getRawAxis(3) * 0.75;
+            }/* else {
+                clockwise = joy.getRawAxis(3);
+            }*/
+            drive.update(forward, right, -clockwise);
+                       //Forward  Right  Clockwise
             
             if (shooterJoy.getRawButton(1)) {
                 shooter.shoot(Values.SHOOTER_RPM);      //Full Speed

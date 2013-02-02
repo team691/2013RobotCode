@@ -6,17 +6,19 @@ import edu.wpi.first.wpilibj.SpeedController;
 public class PIDMotor {
 
     //Init data
+    private String name;
     private SpeedController motor;
     private Encoder enc;
+    private boolean velocity;
     //PIDMotor input
-    private double targetRPM = 0.0;
-    private double currentRPM = 0.0;
+    private double target = 0.0;
     private double error = 0.0;
     private double deltaTime = 0.0;
     //PIDMotor scale
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
+    private double scalar = 0.0;
     //PIDMotor out
     private double integral = 0.0;
     private double derivative = 0.0;
@@ -25,27 +27,39 @@ public class PIDMotor {
     private double lastError = 0.0;
     private long lastTime = 0;
 
-    public PIDMotor(SpeedController motor, Encoder enc, double kp, double ki, double kd) {
+    public PIDMotor(String name, boolean velocity, SpeedController motor, Encoder enc, double kp, double ki, double kd, double scalar) {
+        this.name = name;
+        this.velocity = velocity;
         this.motor = motor;
         this.enc = enc;
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
+        this.scalar = scalar;
     }
 
     //PIDMotor control
     public void run() {
-        currentRPM = enc.getRate() * 60;
-        error = targetRPM - currentRPM;
-        deltaTime = System.currentTimeMillis() - lastTime;
+        if(System.currentTimeMillis() - 10 > lastTime) {
+            if(velocity) {
+                error = (target * scalar) - (enc.getRate() / 60);
+            } else {
+                error = target - enc.get();
+            }
+            if(target == 0.0) {
+                integral = 0.0;
+            }
+            deltaTime = System.currentTimeMillis() - lastTime;
 
-        integral += error * deltaTime;
-        derivative = (error - lastError)/deltaTime;
-        out = (kp * error) + (ki * integral) + (kd * derivative);
-        motor.set(out);
+            integral += error * deltaTime;
+            derivative = (error - lastError) / deltaTime;
+            out = (kp * error) + (ki * integral) + (kd * derivative);
+            motor.set(out / scalar);
+            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
 
-        lastError = error;
-        lastTime = System.currentTimeMillis();
+            lastError = error;
+            lastTime = System.currentTimeMillis();
+        }
     }
     
     //PIDMotor control
@@ -55,6 +69,6 @@ public class PIDMotor {
     }
     
     public void set(double rpm) {
-    	targetRPM = rpm;
+    	target = rpm;
     }
 }

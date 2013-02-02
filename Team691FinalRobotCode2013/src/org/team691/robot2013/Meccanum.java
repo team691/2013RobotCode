@@ -10,26 +10,18 @@ import edu.wpi.first.wpilibj.Victor;
 public class Meccanum {
 	
     //Speed Controllers
-    private int[] motorSlot;
-    private int[] motorChannel;
     private SpeedController frVic;
     private SpeedController flVic;
     private SpeedController brVic;
     private SpeedController blVic;
 
     //Encoders
-    private int[] encSlot;
-    private int[][] encPort;
-    private int[] encCount;
     private Encoder frEnc;
     private Encoder flEnc;
     private Encoder brEnc;
     private Encoder blEnc;
 
     //PIDMotor
-    private double[] kp;
-    private double[] ki;
-    private double[] kd;
     private PIDMotor fr;
     private PIDMotor fl;
     private PIDMotor br;
@@ -45,55 +37,49 @@ public class Meccanum {
     //Fallbacks in case of meccanum code failure
     private boolean useEncoders = true;
 
-    public Meccanum(int[] vicSlot, int[] vicChannel, int[] encSlot, int[][] encPort, int[] encCount, double[][] pid) {
-        this.motorSlot = vicSlot;
-        this.motorChannel = vicChannel;
-        this.encSlot = encSlot;
-        this.encPort = encPort;
-        this.encCount = encCount;
-        this.kp = pid[0];
-        this.ki = pid[1];
-        this.kd = pid[2];
+    public Meccanum(int[] vicSlot, int[] vicChannel, int[] encSlot, int[][] encPort, int[] encDistPerPulse, boolean[] encRev, double[][] pid) {
         useEncoders = true;
-        init();
-        initEnc();
-        initPID();
+        init(vicSlot, vicChannel);
+        initEnc(encSlot, encPort, encDistPerPulse, encRev);
+        initPID(pid[0], pid[1], pid[2], pid[3]);
     }
 
     public Meccanum(int[] vicSlot, int[] vicChannel) {
-        this.motorSlot = vicSlot;
-        this.motorChannel = vicChannel;
         useEncoders = false;
-        init();
+        init(vicSlot, vicChannel);
+    }
+    
+    private void init(int[] vicSlot, int[] vicChannel) {
+        frVic = new Victor(vicSlot[0], vicChannel[0]);
+        flVic = new Victor(vicSlot[1], vicChannel[1]);
+        brVic = new Jaguar(vicSlot[2], vicChannel[2]);
+        blVic = new Jaguar(vicSlot[3], vicChannel[3]);
+        System.out.println("Victors initialized...");
     }
 
-    private void init() {
-        frVic = new Victor(motorSlot[0], motorChannel[0]);
-        flVic = new Victor(motorSlot[1], motorChannel[1]);
-        brVic = new Jaguar(motorSlot[2], motorChannel[2]);
-        blVic = new Jaguar(motorSlot[3], motorChannel[3]);
-    }
-
-    private void initEnc() {
-        frEnc = new Encoder(encSlot[0], encPort[0][0], encSlot[0], encPort[0][1]);
-        flEnc = new Encoder(encSlot[1], encPort[1][0], encSlot[1], encPort[1][1]);
-        brEnc = new Encoder(encSlot[2], encPort[2][0], encSlot[2], encPort[2][1]);
-        blEnc = new Encoder(encSlot[3], encPort[3][0], encSlot[3], encPort[3][1]);		
-        frEnc.setDistancePerPulse(360/encCount[0]);
-        flEnc.setDistancePerPulse(360/encCount[1]);
-        brEnc.setDistancePerPulse(360/encCount[2]);
-        blEnc.setDistancePerPulse(360/encCount[3]);
+    private void initEnc(int[] encSlot, int[][] encPort, int[] encDistPerPulse, boolean[] encRev) {
+        frEnc = new Encoder(encSlot[0], encPort[0][0], encSlot[0], encPort[0][1], encRev[0]);
+        flEnc = new Encoder(encSlot[1], encPort[1][0], encSlot[1], encPort[1][1], encRev[1]);
+        brEnc = new Encoder(encSlot[2], encPort[2][0], encSlot[2], encPort[2][1], encRev[2]);
+        blEnc = new Encoder(encSlot[3], encPort[3][0], encSlot[3], encPort[3][1], encRev[3]);		
+        frEnc.setDistancePerPulse(encDistPerPulse[0]);
+        flEnc.setDistancePerPulse(encDistPerPulse[1]);
+        brEnc.setDistancePerPulse(encDistPerPulse[2]);
+        blEnc.setDistancePerPulse(encDistPerPulse[3]);
+        System.out.println("Encoders initialized...");
         frEnc.start();
         flEnc.start();
         brEnc.start();
         blEnc.start();
+        System.out.println("Encoders started...");
     }
 
-    private void initPID() {
-        fr = new PIDMotor(frVic, frEnc, kp[0], ki[0], kd[0]);
-        fl = new PIDMotor(flVic, flEnc, kp[1], ki[1], kd[1]);
-        br = new PIDMotor(brVic, brEnc, kp[2], ki[2], kd[2]);
-        bl = new PIDMotor(blVic, blEnc, kp[3], ki[3], kd[3]);
+    private void initPID(double[] kp, double[] ki, double[] kd, double[] scalar) {
+        fr = new PIDMotor("FR", true, frVic, frEnc, kp[0], ki[0], kd[0], scalar[0]);
+        fl = new PIDMotor("FL", true, flVic, flEnc, kp[1], ki[1], kd[1], scalar[1]);
+        br = new PIDMotor("BR", true, brVic, brEnc, kp[2], ki[2], kd[2], scalar[2]);
+        bl = new PIDMotor("BL", true, blVic, blEnc, kp[3], ki[3], kd[3], scalar[3]);
+        System.out.println("PIDMotors initialized...");
     }
 
     public void moveDual(Joystick rjoy, Joystick ljoy) {
@@ -119,7 +105,7 @@ public class Meccanum {
         else if(maxVel < Math.abs(blVel)) {maxVel = blVel;}
 
         //Scale motor power if it is above 100%
-        if(maxVel >= 1) {
+        if(maxVel > 1.0) {
             frVel /= maxVel;
             flVel /= maxVel;
             brVel /= maxVel;
@@ -127,10 +113,10 @@ public class Meccanum {
         }
 
         if(useEncoders) {
-            fr.set(frVel);
-            fl.set(flVel);
-            br.set(brVel);
-            bl.set(blVel);
+            fr.run(frVel);
+            fl.run(flVel);
+            br.run(brVel);
+            bl.run(blVel);
         } else {
             frVic.set(frVel);
             flVic.set(flVel);
