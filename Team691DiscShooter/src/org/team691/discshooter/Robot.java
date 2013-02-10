@@ -23,6 +23,7 @@ public class Robot extends SimpleRobot {
                 Values.SHOOTER_TILT_VICTOR_SIDECAR,
                 Values.SHOOTER_TILT_VICTOR, 
                 Values.SHOOTER_TILT_ENCODER,
+                Values.SHOOTER_TILT_POSITION_PID,
                 Values.SHOOTER_TILT_PID);
         shooter.stop();
         
@@ -51,8 +52,8 @@ public class Robot extends SimpleRobot {
             } else {
                 shooter.shoot(Values.SHOOTER_RPM_IDLE); //Idle
             }*/
-            shooter.shoot(0.0);   //TODO: Debug statement, remove for final code!
-            shooter.tilt(joy.getRawAxis(3));
+            //shooter.shoot(0.0);   //TODO: Debug statement, remove for final code!
+            shooter.tilt(joy.getRawAxis(3) * Values.SHOOTER_TILT_POSITION_SCALAR);
             System.out.println(shooter.get());  //TODO: Debug function, remove for final code!
             
             if(joy.getRawButton(6)) {

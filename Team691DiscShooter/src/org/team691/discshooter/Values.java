@@ -34,10 +34,16 @@ public class Values {
     public static final boolean SHOOTER_TILT_ENCODER_REVERSE = false;
     public static final int[] SHOOTER_TILT_ENCODER       = {SHOOTER_TILT_ENCODER_SIDECAR, SHOOTER_TILT_ENCODER_A, SHOOTER_TILT_ENCODER_B, SHOOTER_TILT_ENCODER_DISTANCE_PER_PULSE, (SHOOTER_TILT_ENCODER_REVERSE ? 1 : 0)};
     
-    public static final double SHOOTER_TILT_KP    = 0.005;
-    public static final double SHOOTER_TILT_KI    = 0.0;
-    public static final double SHOOTER_TILT_KD    = 0.0;
-    public static final double SHOOTER_TILT_SCALAR = 180.0;
+    public static final double SHOOTER_TILT_POSITION_KP    = 0.005;
+    public static final double SHOOTER_TILT_POSITION_KI    = 0.0;
+    public static final double SHOOTER_TILT_POSITION_KD    = 0.0;
+    public static final double SHOOTER_TILT_POSITION_SCALAR = 180.0;
+    public static final double[] SHOOTER_TILT_POSITION_PID = {SHOOTER_TILT_POSITION_KP, SHOOTER_TILT_POSITION_KI, SHOOTER_TILT_POSITION_KD, SHOOTER_TILT_POSITION_SCALAR};  
+    
+    public static final double SHOOTER_TILT_KP    = 0.05;
+    public static final double SHOOTER_TILT_KI    = 0.005;
+    public static final double SHOOTER_TILT_KD    = 0.05;
+    public static final double SHOOTER_TILT_SCALAR = 20.0;
     public static final double[] SHOOTER_TILT_PID = {SHOOTER_TILT_KP, SHOOTER_TILT_KI, SHOOTER_TILT_KD, SHOOTER_TILT_SCALAR};  
     
     public static final int UPTAKE_VICTOR           = 10;

@@ -11,9 +11,9 @@ public class Shooter {
     private Encoder shooterEncoder;
     private Encoder tiltEncoder;
     private PIDMotor shooterMotor;
-    private PIDMotor tiltMotor;
+    private PIDPositionMotor tiltMotor;
 
-    public Shooter(int shooterSlot, int shooterChannel, int[] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPID) {
+    public Shooter(int shooterSlot, int shooterChannel, int[] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPosPID, double[] tiltPID) {
         shooterVic = new Victor(shooterSlot, shooterChannel);
         shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2], (shooterEnc[4] == 1 ? true : false));
         shooterEncoder.setDistancePerPulse(shooterEnc[3]);
@@ -24,7 +24,7 @@ public class Shooter {
         tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2], (tiltEnc[4] == 1 ? true : false));
         tiltEncoder.setDistancePerPulse(tiltEnc[3]);
         tiltEncoder.start();
-        tiltMotor = new PIDMotor("Tilt", false, tiltVic, tiltEncoder, tiltPID[0], tiltPID[1], tiltPID[2], tiltPID[3]);
+        tiltMotor = new PIDPositionMotor("Tilt", tiltVic, tiltEncoder, tiltPosPID, tiltPID);
     }
     
     public String get() { 
