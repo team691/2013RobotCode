@@ -1,23 +1,35 @@
 package org.team691.discshooter;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
 
+    private SpeedController shooterVic;
+    private SpeedController tiltVic;
+    private Encoder shooterEncoder;
+    private Encoder tiltEncoder;
     private PIDMotor shooterMotor;
     private PIDMotor tiltMotor;
 
-    public Shooter(int shooterVic, int shooterSidecar, int[] shooterEnc, double[] shooterPID, int tiltVic, int tiltVicSidecar, int[] tiltEnc, double[] tiltPID) {
-        Encoder shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2]);
-        shooterEncoder.setDistancePerPulse(360 / shooterEnc[3]);
-        shooterMotor = new PIDMotor("Shooter", true, new Victor(shooterVic, shooterSidecar), shooterEncoder, shooterPID[0], shooterPID[1], shooterPID[2], shooterPID[3]);
+    public Shooter(int shooterSlot, int shooterChannel, int[] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPID) {
+        shooterVic = new Victor(shooterSlot, shooterChannel);
+        shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2], (shooterEnc[4] == 1 ? true : false));
+        shooterEncoder.setDistancePerPulse(shooterEnc[3]);
+        shooterEncoder.start();
+        shooterMotor = new PIDMotor("Shooter", true, shooterVic, shooterEncoder, shooterPID[0], shooterPID[1], shooterPID[2], shooterPID[3]);
 
-        Encoder tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2]);
-        tiltEncoder.setDistancePerPulse(360 / tiltEnc[3]);
-        //TODO: Make PID position, not velocity!
-        tiltMotor = new PIDMotor("Tilt", false, new Victor(tiltVic, tiltVicSidecar), tiltEncoder, tiltPID[0], tiltPID[1], tiltPID[2], tiltPID[3]);
+        tiltVic = new Victor(tiltSlot, tiltChannel);
+        tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2], (tiltEnc[4] == 1 ? true : false));
+        tiltEncoder.setDistancePerPulse(tiltEnc[3]);
+        tiltEncoder.start();
+        tiltMotor = new PIDMotor("Tilt", false, tiltVic, tiltEncoder, tiltPID[0], tiltPID[1], tiltPID[2], tiltPID[3]);
     }
+    
+    public String get() { 
+        return "Shooter: " + shooterEncoder.get() + " Tilt: " + tiltEncoder.get();  //TODO: Debug function, remove for final code!
+    }    
     
     public void update(double shooterSpeed, double tiltPos) {
         shooterMotor.run(shooterSpeed);
