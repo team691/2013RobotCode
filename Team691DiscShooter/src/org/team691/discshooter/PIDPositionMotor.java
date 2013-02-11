@@ -7,7 +7,7 @@ public class PIDPositionMotor {
 
     //Init data
     private String name;
-    private PIDMotor motor;
+    private PIDVelocityMotor motor;
     private Encoder enc;
     //PIDMotor input
     private double position = 0.0;
@@ -18,7 +18,7 @@ public class PIDPositionMotor {
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
-    private double scalar = 0.0;
+    private double max = 0.0;
     //PIDMotor out
     private double integral = 0.0;
     private double derivative = 0.0;
@@ -29,12 +29,12 @@ public class PIDPositionMotor {
 
     public PIDPositionMotor(String name, SpeedController motor, Encoder enc, double[] posPID, double[] velPID) {
         this.name = name;
-        this.motor = new PIDMotor(name, true, motor, enc, velPID[0], velPID[1], velPID[2], velPID[3]);
+        this.motor = new PIDVelocityMotor(name, motor, enc, velPID);
         this.enc = enc;
         kp = posPID[0];
         ki = posPID[1];
         kd = posPID[2];
-        scalar = posPID[3];
+        max = velPID[3];
     }
 
     //PIDPositionMotor control
@@ -53,10 +53,11 @@ public class PIDPositionMotor {
             integral += error * deltaTime;
             derivative = (error - lastError) / deltaTime;
             out = (kp * error) + (ki * integral) + (kd * derivative);
-            if(out >= 1.0) {
-                motor.run(1.0);
-            } else if(out <= -1.0) {
-                motor.run(-1.0);
+            out *= max;
+            if(out >= max) {
+                motor.run(max);
+            } else if(out <= -max) {
+                motor.run(-max);
             } else {
                 motor.run(out);
             }
@@ -68,12 +69,8 @@ public class PIDPositionMotor {
     }
     
     //PIDPositionMotor control
-    public void run(double speed) {
-        set(speed);
+    public void run(double pos) {
+        target = pos;
         run();
-    }
-    
-    public void set(double rpm) {
-    	target = rpm;
     }
 }

@@ -16,9 +16,9 @@ public class Robot extends SimpleRobot {
 
     public void robotInit() {
         shooter = new Shooter(
-                Values.SHOOTER_VICTOR_SIDECAR,
-                Values.SHOOTER_VICTOR,
-                Values.SHOOTER_ENCODER,
+                Values.SHOOTER_VICTOR_SIDECARS,
+                Values.SHOOTER_VICTORS,
+                Values.SHOOTER_ENCODERS,
                 Values.SHOOTER_PID,
                 Values.SHOOTER_TILT_VICTOR_SIDECAR,
                 Values.SHOOTER_TILT_VICTOR, 
@@ -45,16 +45,17 @@ public class Robot extends SimpleRobot {
 
     public void operatorControl() {
         while (isEnabled() && isOperatorControl()) {
-            /*if (joy.getRawButton(1)) {
+            if (joy.getRawButton(1)) {
                 shooter.shoot(Values.SHOOTER_RPM);      //Full Speed
-            } else if(joy.getRawButton(4) || joy.getRawButton(5)){
+            } else if(joy.getRawButton(2) || joy.getRawButton(3)){
                 shooter.stop();                         //Stop
             } else {
                 shooter.shoot(Values.SHOOTER_RPM_IDLE); //Idle
-            }*/
-            //shooter.shoot(0.0);   //TODO: Debug statement, remove for final code!
+            }
+            if(joy.getRawButton(4)) {
+                shooter.resetTilt();
+            }
             shooter.tilt(joy.getRawAxis(3) * Values.SHOOTER_TILT_POSITION_SCALAR);
-            System.out.println(shooter.get());  //TODO: Debug function, remove for final code!
             
             if(joy.getRawButton(6)) {
                 uptake.feed(Values.UPTAKE_SPEED);       //Forward
