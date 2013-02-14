@@ -3,13 +3,12 @@ package org.team691.meccanum;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 
-public class PIDMotor {
+public class PIDVelocityMotor {
 
     //Init data
     private String name;
     private SpeedController motor;
     private Encoder enc;
-    private boolean velocity;
     //PIDMotor input
     private double target = 0.0;
     private double error = 0.0;
@@ -18,7 +17,7 @@ public class PIDMotor {
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
-    private double scalar = 0.0;
+    private double max = 0.0;
     //PIDMotor out
     private double integral = 0.0;
     private double derivative = 0.0;
@@ -27,25 +26,20 @@ public class PIDMotor {
     private double lastError = 0.0;
     private long lastTime = 0;
 
-    public PIDMotor(String name, boolean velocity, SpeedController motor, Encoder enc, double kp, double ki, double kd, double scalar) {
+    public PIDVelocityMotor(String name, SpeedController motor, Encoder enc, double[] pid) {
         this.name = name;
-        this.velocity = velocity;
         this.motor = motor;
         this.enc = enc;
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-        this.scalar = scalar;
+        this.kp = pid[0];
+        this.ki = pid[1];
+        this.kd = pid[2];
+        this.max = pid[3];
     }
 
     //PIDMotor control
     public void run() {
         if(System.currentTimeMillis() - 10 > lastTime) {
-            if(velocity) {
-                error = (target * scalar) - (enc.getRate() / 60);
-            } else {
-                error = target - enc.get();
-            }
+            error = target - (enc.getRate() / 60);
             if(target == 0.0) {
                 integral = 0.0;
             }
@@ -54,8 +48,8 @@ public class PIDMotor {
             integral += error * deltaTime;
             derivative = (error - lastError) / deltaTime;
             out = (kp * error) + (ki * integral) + (kd * derivative);
-            motor.set(out / scalar);
-            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
+            motor.set(out / max);
+            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Max: " + max + " Out: " + out + "\n");
 
             lastError = error;
             lastTime = System.currentTimeMillis();
@@ -63,12 +57,16 @@ public class PIDMotor {
     }
     
     //PIDMotor control
-    public void run(double speed) {
-        set(speed);
+    public void run(double rpm) {
+        target = rpm;
         run();
     }
     
-    public void set(double rpm) {
-    	target = rpm;
+    public boolean atTarget() {
+        if(error < (target * 0.05)) {   //Test on final shooter!
+            return true;
+        } else {
+            return false;
+        }
     }
 }

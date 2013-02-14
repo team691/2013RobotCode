@@ -11,6 +11,7 @@ public class Robot extends SimpleRobot {
     double forward = 0.0;
     double right = 0.0;
     double clockwise = 0.0;
+    double scalar = 0.0;
 
     //Meccanum drive
     Meccanum drive;
@@ -27,6 +28,7 @@ public class Robot extends SimpleRobot {
                         Values.DRIVE_PID
         );  //With encoders
         drive.stop();
+        scalar =  (Values.FR_DRIVE_PID_SCALAR + Values.FL_DRIVE_PID_SCALAR + Values.BR_DRIVE_PID_SCALAR + Values.BL_DRIVE_PID_SCALAR) / 4;
     }
 	
     public void operatorControl() {
@@ -34,17 +36,17 @@ public class Robot extends SimpleRobot {
             if(Math.abs(joy.getRawAxis(2)) < 0.2) {
                 forward = 0.0;
             } else {
-                forward = joy.getRawAxis(2);
+                forward = joy.getRawAxis(2) * scalar;
             }
             if(Math.abs(joy.getRawAxis(1)) < 0.2) {
                 right = 0.0;
             } else {
-                right = joy.getRawAxis(1);
+                right = joy.getRawAxis(1) * scalar;
             }
             if(Math.abs(joy.getRawAxis(3)) < 0.2) {
                 clockwise = 0.0;
             } else {    // if(Math.abs(joy.getRawAxis(3)) < 0.75) {
-                clockwise = joy.getRawAxis(3) * 0.75;
+                clockwise = joy.getRawAxis(3) * 0.75 * scalar;
             }/* else {
                 clockwise = joy.getRawAxis(3);
             }*/

@@ -65,9 +65,9 @@ public class Values {
     public static final double FL_DRIVE_PID_SCALAR = 100.0;
     public static final double BR_DRIVE_PID_SCALAR = 100.0;
     public static final double BL_DRIVE_PID_SCALAR = 100.0;
-    public static final double[] DRIVE_PID_KP  = {FR_DRIVE_PID_KP, FL_DRIVE_PID_KP, BR_DRIVE_PID_KP, BL_DRIVE_PID_KP};
-    public static final double[] DRIVE_PID_KI  = {FR_DRIVE_PID_KI, FL_DRIVE_PID_KI, BR_DRIVE_PID_KI, BL_DRIVE_PID_KI};
-    public static final double[] DRIVE_PID_KD  = {FR_DRIVE_PID_KD, FL_DRIVE_PID_KD, BR_DRIVE_PID_KD, BL_DRIVE_PID_KD};
-    public static final double[] DRIVE_PID_SCALAR  = {FR_DRIVE_PID_SCALAR, FL_DRIVE_PID_SCALAR, BR_DRIVE_PID_SCALAR, BL_DRIVE_PID_SCALAR};
-    public static final double[][] DRIVE_PID   = {DRIVE_PID_KP, DRIVE_PID_KI, DRIVE_PID_KD, DRIVE_PID_SCALAR};
+    public static final double[] FR_DRIVE_PID  = {FR_DRIVE_PID_KP, FR_DRIVE_PID_KI, FR_DRIVE_PID_KD, FR_DRIVE_PID_SCALAR};
+    public static final double[] FL_DRIVE_PID  = {FL_DRIVE_PID_KP, FL_DRIVE_PID_KI, FL_DRIVE_PID_KD, FL_DRIVE_PID_SCALAR};
+    public static final double[] BR_DRIVE_PID  = {BR_DRIVE_PID_KP, BR_DRIVE_PID_KI, BR_DRIVE_PID_KD, BR_DRIVE_PID_SCALAR};
+    public static final double[] BL_DRIVE_PID  = {BL_DRIVE_PID_KP, BL_DRIVE_PID_KI, BL_DRIVE_PID_KD, BL_DRIVE_PID_SCALAR};
+    public static final double[][] DRIVE_PID   = {FR_DRIVE_PID, FL_DRIVE_PID, BR_DRIVE_PID, BL_DRIVE_PID};
 }
