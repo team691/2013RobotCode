@@ -17,7 +17,7 @@ public class PIDVelocityMotor {
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
-    private double scalar = 0.0;
+    private double max = 0.0;
     //PIDMotor out
     private double integral = 0.0;
     private double derivative = 0.0;
@@ -33,7 +33,7 @@ public class PIDVelocityMotor {
         this.kp = pid[0];
         this.ki = pid[1];
         this.kd = pid[2];
-        this.scalar = pid[3];
+        this.max = pid[3];
     }
 
     //PIDMotor control
@@ -48,7 +48,7 @@ public class PIDVelocityMotor {
             integral += error * deltaTime;
             derivative = (error - lastError) / deltaTime;
             out = (kp * error) + (ki * integral) + (kd * derivative);
-            motor.set(out / scalar);
+            motor.set(out / max);
             System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
 
             lastError = error;
@@ -60,5 +60,13 @@ public class PIDVelocityMotor {
     public void run(double rpm) {
         target = rpm;
         run();
+    }
+    
+    public boolean atTarget() {
+        if(error < (target * 0.05)) {   //Test on final shooter!
+            return true;
+        } else {
+            return false;
+        }
     }
 }
