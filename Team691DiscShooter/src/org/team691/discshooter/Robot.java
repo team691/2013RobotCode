@@ -1,7 +1,6 @@
 package org.team691.discshooter;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SimpleRobot;
 
 public class Robot extends SimpleRobot {
@@ -34,21 +33,15 @@ public class Robot extends SimpleRobot {
         intake = new Intake(
                 Values.INTAKE_ARM_VICTOR_SIDECAR,
                 Values.INTAKE_ARM_VICTOR,
-                Values.INTAKE_WRIST_RELAY_SIDECAR,
-                Values.INTAKE_WRIST_RELAY,
-                Values.INTAKE_WRIST_LIMIT,
-                Values.INTAKE_GRABBER_RELAY_SIDECAR,
-                Values.INTAKE_GRABBER_RELAY);   //No Encoders
+                Values.INTAKE_WRIST_VICTOR_SIDECAR,
+                Values.INTAKE_WRIST_VICTOR);    //No Encoders
         /*intake = new Intake(
                 Values.INTAKE_ARM_VICTOR_SIDECAR,
                 Values.INTAKE_ARM_VICTOR,
                 Values.INTAKE_ARM_ENCODER,
                 Values.INTAKE_ARM_PID,
                 Values.INTAKE_WRIST_RELAY_SIDECAR,
-                Values.INTAKE_WRIST_RELAY,
-                Values.INTAKE_WRIST_LIMIT,
-                Values.INTAKE_GRABBER_RELAY_SIDECAR,
-                Values.INTAKE_GRABBER_RELAY); */    //With Encoders
+                Values.INTAKE_WRIST_RELAY);*/   //With Encoders
         intake.stop();
     }
     
@@ -91,18 +84,11 @@ public class Robot extends SimpleRobot {
                 intake.reach(-0.1);
             }
             if(joy.getRawButton(8)) {
-                intake.flip(true);                      //Flip upside up
+                intake.flip(Values.FLIP_SPEED);                      //Flip upside up
             } else if(joy.getRawButton(9)) {
-                intake.flip(false);                     //Flip upside down
+                intake.flip(-Values.FLIP_SPEED);                     //Flip upside down
             } else {
-                intake.flip(intake.isFlipped());        //Finish flipping/don't flip
-            }
-            if(joy.getRawButton(6)) {
-                intake.grab(Relay.Value.kForward);      //Run intake forward
-            } else if(joy.getRawButton(7)) {
-                intake.grab(Relay.Value.kReverse);      //Run intake backward
-            } else {
-                intake.grab(Relay.Value.kOff);          //Turn off intake
+                intake.flip(0.0);        //Finish flipping/don't flip
             }
         }
     }
