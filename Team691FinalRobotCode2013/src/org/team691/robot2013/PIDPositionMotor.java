@@ -3,14 +3,14 @@ package org.team691.robot2013;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 
-public class PIDMotor {
+public class PIDPositionMotor {
 
     //Init data
     private String name;
-    private SpeedController motor;
+    private PIDVelocityMotor motor;
     private Encoder enc;
-    private boolean velocity;
     //PIDMotor input
+    private double position = 0.0;
     private double target = 0.0;
     private double error = 0.0;
     private double deltaTime = 0.0;
@@ -18,7 +18,7 @@ public class PIDMotor {
     private double kp = 0.0;
     private double ki = 0.0;
     private double kd = 0.0;
-    private double scalar = 0.0;
+    private double max = 0.0;
     //PIDMotor out
     private double integral = 0.0;
     private double derivative = 0.0;
@@ -27,26 +27,25 @@ public class PIDMotor {
     private double lastError = 0.0;
     private long lastTime = 0;
 
-    public PIDMotor(String name, boolean velocity, SpeedController motor, Encoder enc, double kp, double ki, double kd, double scalar) {
+    public PIDPositionMotor(String name, SpeedController motor, Encoder enc, double[] posPID, double[] velPID) {
         this.name = name;
-        this.velocity = velocity;
-        this.motor = motor;
+        this.motor = new PIDVelocityMotor(name, motor, enc, velPID);
         this.enc = enc;
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-        this.scalar = scalar;
+        kp = posPID[0];
+        ki = posPID[1];
+        kd = posPID[2];
+        max = velPID[3];
     }
 
-    //PIDMotor control
+    //PIDPositionMotor control
     public void run() {
         if(System.currentTimeMillis() - 10 > lastTime) {
-            if(velocity) {
-                error = (target * scalar) - (enc.getRate() / 60);
-            } else {
-                error = target - enc.get();
+            position = enc.getDistance();
+            while(position > 360 || position < -360) {
+                position /= 360;
             }
-            if(target == 0.0) {
+            error = target - enc.getDistance();
+            if(target == enc.getDistance()) {
                 integral = 0.0;
             }
             deltaTime = System.currentTimeMillis() - lastTime;
@@ -54,21 +53,24 @@ public class PIDMotor {
             integral += error * deltaTime;
             derivative = (error - lastError) / deltaTime;
             out = (kp * error) + (ki * integral) + (kd * derivative);
-            motor.set(out / scalar);
-            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
+            out *= max;
+            if(out >= max) {
+                motor.run(max);
+            } else if(out <= -max) {
+                motor.run(-max);
+            } else {
+                motor.run(out);
+            }
+            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentPos: " + enc.getDistance() + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
 
             lastError = error;
             lastTime = System.currentTimeMillis();
         }
     }
     
-    //PIDMotor control
-    public void run(double speed) {
-        set(speed);
+    //PIDPositionMotor control
+    public void run(double pos) {
+        target = pos;
         run();
-    }
-    
-    public void set(double rpm) {
-    	target = rpm;
     }
 }

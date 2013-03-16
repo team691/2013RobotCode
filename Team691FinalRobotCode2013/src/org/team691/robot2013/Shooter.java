@@ -1,38 +1,125 @@
 package org.team691.robot2013;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
 
-    private PIDMotor shooterMotor;
-    private PIDMotor tiltMotor;
+    private SpeedController shooterVic;
+    private SpeedController shooterAccelVic;
+    private SpeedController tiltVic;
+    private Encoder shooterEncoder;
+    private Encoder shooterAccelEncoder;
+    private Encoder tiltEncoder;
+    private PIDVelocityMotor shooterMotor;
+    private PIDVelocityMotor shooterAccelMotor;
+    private PIDPositionMotor tiltMotor;
+    private double lastTiltPos = 0;
+    private int tiltResetCounter = 0;
+    private boolean useEncoders = true;
 
-    public Shooter(int shooterVic, int shooterSidecar, int[] shooterEnc, double[] shooterPID, int tiltVic, int tiltVicSidecar, int[] tiltEnc, double[] tiltPID) {
-        Encoder shooterEncoder = new Encoder(shooterEnc[0], shooterEnc[1], shooterEnc[0], shooterEnc[2]);
-        shooterEncoder.setDistancePerPulse(360 / shooterEnc[3]);
-        shooterMotor = new PIDMotor("Shooter", true, new Victor(shooterVic, shooterSidecar), shooterEncoder, shooterPID[0], shooterPID[1], shooterPID[2], shooterPID[3]);
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int[][] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPosPID, double[] tiltPID) {
+        useEncoders = true;
+        
+        shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
+        shooterEncoder = new Encoder(shooterEnc[0][0], shooterEnc[0][1], shooterEnc[0][0], shooterEnc[0][2], (shooterEnc[0][4] == 1 ? true : false));
+        shooterEncoder.setDistancePerPulse(shooterEnc[0][3]);
+        shooterEncoder.start();
+        shooterMotor = new PIDVelocityMotor("Shooter", shooterVic, shooterEncoder, shooterPID);
+        
+        shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
+        shooterAccelEncoder = new Encoder(shooterEnc[1][0], shooterEnc[1][1], shooterEnc[1][0], shooterEnc[1][2], (shooterEnc[1][4] == 1 ? true : false));
+        shooterAccelEncoder.setDistancePerPulse(shooterEnc[1][3]);
+        shooterAccelEncoder.start();
+        shooterAccelMotor = new PIDVelocityMotor("ShooterAccel", shooterAccelVic, shooterAccelEncoder, shooterPID);
 
-        Encoder tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2]);
-        tiltEncoder.setDistancePerPulse(360 / tiltEnc[3]);
-        //TODO: Make PID position, not velocity!
-        tiltMotor = new PIDMotor("Tilt", false, new Victor(tiltVic, tiltVicSidecar), tiltEncoder, tiltPID[0], tiltPID[1], tiltPID[2], tiltPID[3]);
+        tiltVic = new Victor(tiltSlot, tiltChannel);
+        tiltEncoder = new Encoder(tiltEnc[0], tiltEnc[1], tiltEnc[0], tiltEnc[2], (tiltEnc[4] == 1 ? true : false));
+        tiltEncoder.setDistancePerPulse(tiltEnc[3]);
+        tiltEncoder.start();
+        tiltMotor = new PIDPositionMotor("Tilt", tiltVic, tiltEncoder, tiltPosPID, tiltPID);
+    }
+    
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel) {
+        useEncoders = false;
+        shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
+        shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
+        tiltVic = new Victor(tiltSlot, tiltChannel);
     }
     
     public void update(double shooterSpeed, double tiltPos) {
-        shooterMotor.run(shooterSpeed);
-        tiltMotor.run(tiltPos);
+        if(useEncoders) {
+            shooterMotor.run(shooterSpeed);
+            shooterAccelMotor.run(shooterSpeed);
+            tiltMotor.run(tiltPos);
+        } else {
+            shooterVic.set(shooterSpeed);
+            shooterAccelVic.set(shooterSpeed);
+            tiltVic.set(tiltPos);
+        }
     }
     
     public void shoot(double shooterSpeed) {
-        shooterMotor.run(shooterSpeed);
+        if(useEncoders) {
+            shooterMotor.run(shooterSpeed);
+            shooterAccelMotor.run(shooterSpeed);
+        } else {
+            shooterVic.set(shooterSpeed);
+            shooterAccelVic.set(shooterSpeed);
+        }
     }
     
     public void tilt(double tiltPos){
-        tiltMotor.run(tiltPos);
+        if(useEncoders) {
+            tiltMotor.run(tiltPos);   
+        } else {
+            tiltVic.set(tiltPos);
+        }
+    }
+    
+    public boolean isReady() {
+        if(shooterMotor.atTarget() && shooterAccelMotor.atTarget() && useEncoders) {
+            return true;
+        } else if(useEncoders) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    public boolean resetTilt() {
+        if(useEncoders) {
+            tiltMotor.run(tiltEncoder.getDistance());
+            tiltVic.set(0.1);
+
+            if(Math.abs(tiltEncoder.getDistance() - lastTiltPos) <= 5) {
+                tiltResetCounter++;
+            } else {
+                tiltResetCounter = 0;
+            }        
+            lastTiltPos = tiltEncoder.getDistance();
+
+            if(tiltResetCounter >= 5) {
+                tiltVic.set(0.0);
+                tiltEncoder.reset();
+                tiltResetCounter = 0;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     public void stop() {
-        shooterMotor.set(0.0);
+        if(useEncoders) {
+            shooterMotor.run(0.0);
+            shooterAccelMotor.run(0.0);
+        } else {
+            shooterVic.set(0.0);
+            shooterAccelVic.set(0.0);
+        }
     }
 }

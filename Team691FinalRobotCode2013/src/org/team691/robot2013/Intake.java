@@ -3,33 +3,54 @@ package org.team691.robot2013;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Intake {
     
-    //Arm, Wrist, and Hand motors
-    private PIDMotor arm;
+    //Arm, Wrist, and Hand
+    private SpeedController armVic;
+    private Encoder armEncoder;
+    private PIDPositionMotor arm;
     private Relay wrist;
     private Relay intake;
+    private boolean useEncoders = true;
     
     //Wrist sensors
     private DigitalInput flipLimit;
     private boolean flipped = false;
     private boolean transition = false;
     
-    public Intake(int armPort, int armSidecar, int[] armEnc, double[] armPID, int wristPort, int wristSidecar, int wristLimit, int intakePort, int intakeSidecar){
-        Encoder armEncoder = new Encoder(armEnc[0], armEnc[1], armEnc[0], armEnc[2]);
+    public Intake(int armSlot, int armChannel, int[] armEnc, double[] armPosPID, double[] armPID, int wristSlot, int wristChannel, int wristLimit, int intakeSlot, int intakeChannel){
+        useEncoders = true;
+        armVic = new Victor(armSlot, armChannel);
+        armEncoder = new Encoder(armEnc[0], armEnc[1], armEnc[0], armEnc[2]);
         armEncoder.setDistancePerPulse(360 / armEnc[3]);
-        arm = new PIDMotor("Arm", false, new Victor(armPort, armSidecar), armEncoder, armPID[0], armPID[1], armPID[2], armPID[3]);
+        armEncoder.start();
+        arm = new PIDPositionMotor("Arm", armVic, armEncoder, armPosPID, armPID);
         
-        wrist = new Relay(wristPort, wristSidecar);
-        flipLimit = new DigitalInput(wristSidecar, wristLimit);
+        wrist = new Relay(wristSlot, wristChannel);
+        flipLimit = new DigitalInput(wristSlot, wristLimit);
         
-        intake = new Relay(intakePort, intakeSidecar);
+        intake = new Relay(intakeSlot, intakeChannel);
+    }
+    
+    public Intake(int armSlot, int armChannel, int wristSlot, int wristChannel, int wristLimit, int intakeSlot, int intakeChannel){
+        useEncoders = false;
+        armVic = new Victor(armSlot, armChannel);
+        
+        wrist = new Relay(wristSlot, wristChannel);
+        flipLimit = new DigitalInput(wristSlot, wristLimit);
+        
+        intake = new Relay(intakeSlot, intakeChannel);
     }
     
     public void update(double reach, boolean flip, Relay.Value grab) {
-        arm.set(reach);
+        if(useEncoders) {
+            arm.run(reach);            
+        } else {
+            armVic.set(0.0);
+        }
         
         if(flip != !flipped && transition == false) {
             if(!flipped) {
@@ -49,8 +70,12 @@ public class Intake {
         intake.set(grab);
     }
     
-    public void reach(double speed) {
-        arm.set(speed);
+    public void reach(double pos) {
+        if(useEncoders) {
+            arm.run(pos);            
+        } else {
+            armVic.set(pos);
+        }
     }
     
     public void flip(boolean upward) {
@@ -79,7 +104,6 @@ public class Intake {
     }
     
     public void stop() {
-        arm.set(0.0);
         wrist.set(Relay.Value.kOff);
         intake.set(Relay.Value.kOff);
     }

@@ -22,16 +22,17 @@ public class Meccanum {
     private Encoder blEnc;
 
     //PIDMotor
-    private PIDMotor fr;
-    private PIDMotor fl;
-    private PIDMotor br;
-    private PIDMotor bl;
+    private PIDVelocityMotor fr;
+    private PIDVelocityMotor fl;
+    private PIDVelocityMotor br;
+    private PIDVelocityMotor bl;
 
     //Meccanum control
     private double frVel = 0.0;
     private double flVel = 0.0;
     private double brVel = 0.0;
     private double blVel = 0.0;
+    private double max = 0.0;
     private double maxVel = 0.0;
 
     //Fallbacks in case of meccanum code failure
@@ -41,7 +42,7 @@ public class Meccanum {
         useEncoders = true;
         init(vicSlot, vicChannel);
         initEnc(encSlot, encPort, encDistPerPulse, encRev);
-        initPID(pid[0], pid[1], pid[2], pid[3]);
+        initPID(pid);
     }
 
     public Meccanum(int[] vicSlot, int[] vicChannel) {
@@ -74,11 +75,12 @@ public class Meccanum {
         System.out.println("Encoders started...");
     }
 
-    private void initPID(double[] kp, double[] ki, double[] kd, double[] scalar) {
-        fr = new PIDMotor("FR", true, frVic, frEnc, kp[0], ki[0], kd[0], scalar[0]);
-        fl = new PIDMotor("FL", true, flVic, flEnc, kp[1], ki[1], kd[1], scalar[1]);
-        br = new PIDMotor("BR", true, brVic, brEnc, kp[2], ki[2], kd[2], scalar[2]);
-        bl = new PIDMotor("BL", true, blVic, blEnc, kp[3], ki[3], kd[3], scalar[3]);
+    private void initPID(double[][] pid) {
+        max = (pid[0][3] + pid[1][3] + pid[2][3] + pid[3][3]) / 4;
+        fr = new PIDVelocityMotor("FR", frVic, frEnc, pid[0]);
+        fl = new PIDVelocityMotor("FL", flVic, flEnc, pid[1]);
+        br = new PIDVelocityMotor("BR", brVic, brEnc, pid[2]);
+        bl = new PIDVelocityMotor("BL", blVic, blEnc, pid[3]);
         System.out.println("PIDMotors initialized...");
     }
 
@@ -104,20 +106,30 @@ public class Meccanum {
         else if(maxVel < Math.abs(brVel)) {maxVel = brVel;}
         else if(maxVel < Math.abs(blVel)) {maxVel = blVel;}
 
-        //Scale motor power if it is above 100%
-        if(maxVel > 1.0) {
-            frVel /= maxVel;
-            flVel /= maxVel;
-            brVel /= maxVel;
-            blVel /= maxVel;
-        }
-
-        if(useEncoders) {
+        if(useEncoders) {   
+            //Scale motor power if it is above 100%
+            if(Math.abs(maxVel) > max) {
+                frVel /= maxVel;
+                flVel /= maxVel;
+                brVel /= maxVel;
+                blVel /= maxVel;
+                frVel *= max;
+                flVel *= max;
+                brVel *= max;
+                blVel *= max;
+            }
             fr.run(frVel);
             fl.run(flVel);
             br.run(brVel);
             bl.run(blVel);
         } else {
+            //Scale motor power if it is above 100%
+            if(Math.abs(maxVel) > 1.0) {
+                frVel /= maxVel;
+                flVel /= maxVel;
+                brVel /= maxVel;
+                blVel /= maxVel;
+            }
             frVic.set(frVel);
             flVic.set(flVel);
             brVic.set(brVel);
@@ -127,10 +139,10 @@ public class Meccanum {
 
     public void stop() {
         if(useEncoders) {
-            fr.set(0.0);
-            fl.set(0.0);
-            br.set(0.0);
-            bl.set(0.0);
+            fr.run(0.0);
+            fl.run(0.0);
+            br.run(0.0);
+            bl.run(0.0);
         } else {
             frVic.set(0.0);
             flVic.set(0.0);
