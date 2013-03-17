@@ -75,6 +75,7 @@ public class Values {
     public static final double SHOOTER_RPM      = 60.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
     public static final double SHOOTER_RPM_IDLE = SHOOTER_RPM / 2;
     public static final double UPTAKE_SPEED     = 0.5; //TODO: Change this to best value after prototype! Final because value doesn't change.  
+    public static final double FLIP_SPEED       = 0.25; //TODO: Change this to best value after prototype! Final because value doesn't change.  
     
     public static final int SHOOTER_VICTOR          = 2;
     public static final int SHOOTER_ACCEL_VICTOR    = 8;
@@ -149,10 +150,6 @@ public class Values {
     public static final double INTAKE_ARM_SCALAR = 0.0;
     public static final double[] INTAKE_ARM_PID = {INTAKE_ARM_KP, INTAKE_ARM_KI, INTAKE_ARM_KD, INTAKE_ARM_SCALAR};
     
-    public static final int INTAKE_WRIST_RELAY          = 1;
-    public static final int INTAKE_WRIST_RELAY_SIDECAR  = SIDECAR_2;
-    public static final int INTAKE_WRIST_LIMIT          = 12;
-    
-    public static final int INTAKE_GRABBER_RELAY         = 1;
-    public static final int INTAKE_GRABBER_RELAY_SIDECAR = SIDECAR_4;
+    public static final int INTAKE_WRIST_VICTOR          = 1;
+    public static final int INTAKE_WRIST_VICTOR_SIDECAR  = SIDECAR_2;
 }
