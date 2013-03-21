@@ -63,7 +63,7 @@ public class PIDVelocityMotor {
     }
     
     public boolean atTarget() {
-        if(Math.abs(error - target) <= 0.05) {   //Test on final shooter!
+        if(Math.abs(error - target) <= 5) {   //Test on final shooter!
             return true;
         } else {
             return false;
