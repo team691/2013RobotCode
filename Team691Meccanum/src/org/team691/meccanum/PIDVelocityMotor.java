@@ -49,7 +49,7 @@ public class PIDVelocityMotor {
             derivative = (error - lastError) / deltaTime;
             out = (kp * error) + (ki * integral) + (kd * derivative);
             motor.set(out / max);
-            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Max: " + max + " Out: " + out + "\n");
+            System.out.println("Name: " + name + " KP: " + kp + " Target: " + target + " CurrentRPM: " + (enc.getRate() / 60) + " Error: " + error + " Get(): " + enc.get() + " Out: " + out + "\n");
 
             lastError = error;
             lastTime = System.currentTimeMillis();
@@ -63,7 +63,7 @@ public class PIDVelocityMotor {
     }
     
     public boolean atTarget() {
-        if(error < (target * 0.05)) {   //Test on final shooter!
+        if(Math.abs(error - target) <= 5) {   //Test on final shooter!
             return true;
         } else {
             return false;
