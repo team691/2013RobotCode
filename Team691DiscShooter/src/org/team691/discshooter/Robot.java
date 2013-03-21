@@ -6,17 +6,20 @@ import edu.wpi.first.wpilibj.SimpleRobot;
 public class Robot extends SimpleRobot {
 
     //Driver station I/O
-    Joystick joy = new Joystick(Values.SHOOTER_JOYSTICK);
+    Joystick shooterJoy = new Joystick(Values.SHOOTER_JOYSTICK);
     
     //Shooter, Uptake, & Intake
     Shooter shooter;
     Uptake uptake;
     Intake intake;
     boolean running = false;
+    
+    //Autonomous
+    long autoStart = 0;
 
     public void robotInit() {
-        //shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);    //No Encoders
-        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR, Values.SHOOTER_TACHOMETER_SIDECAR, Values.SHOOTER_TACHOMETER, Values.SHOOTER_TACHOMETER_RPM);    //With Tachometer
+        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);    //No Encoders
+        //shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR, Values.SHOOTER_TACHOMETER_SIDECAR, Values.SHOOTER_TACHOMETER, Values.SHOOTER_TACHOMETER_RPM);    //With Tachometer
         /*shooter = new Shooter(
                 Values.SHOOTER_VICTOR_SIDECARS,
                 Values.SHOOTER_VICTORS,
@@ -51,46 +54,58 @@ public class Robot extends SimpleRobot {
     }
     
     public void autonomous() {
+        autoStart = System.currentTimeMillis();
         while(isEnabled() && isAutonomous()) {
-            while(!shooter.resetTilt()) {}   
+            //while(!shooter.resetTilt()) {}
+            
+            if (shooter.isReady() && (System.currentTimeMillis() - autoStart) < 10000) {
+                shooter.shoot(Values.SHOOTER_RPM / 100);        //Full Speed
+                uptake.feed(Values.UPTAKE_SPEED);               //Feed Disc
+            } else if((System.currentTimeMillis() - autoStart) < 10000){
+                shooter.shoot(Values.SHOOTER_RPM / 100);        //Full Speed
+            }
         }
     }
 
     public void operatorControl() {
         while (isEnabled() && isOperatorControl()) {
-            if (joy.getRawButton(1) && shooter.isReady()) {
+            if (shooterJoy.getRawButton(1) && shooter.isReady()) {
                 shooter.shoot(Values.SHOOTER_RPM / 100);        //Full Speed
                 uptake.feed(Values.UPTAKE_SPEED);               //Feed Disc
-            } else if(joy.getRawButton(1)) {
+            } else if(shooterJoy.getRawButton(1)) {
                 shooter.shoot(Values.SHOOTER_RPM / 100);        //Full Speed
-            } else if(joy.getRawButton(3)){
+            } else if(shooterJoy.getRawButton(3)){
                 shooter.stop();                                 //Stop
             } else {
                 shooter.shoot(Values.SHOOTER_RPM_IDLE / 100);   //Idle
+                uptake.close();
             }
-            if(joy.getRawButton(11)) {
+            if(shooterJoy.getRawButton(2)) {
+                uptake.feed(Values.UPTAKE_SPEED);
+            }
+            /*if(shooterJoy.getRawButton(11)) {
                 while(!shooter.resetTilt()) {}
-            }
-            shooter.tilt(joy.getRawAxis(3) );//* Values.SHOOTER_TILT_POSITION_SCALAR);
+            }*/
+            shooter.tilt(shooterJoy.getRawAxis(1) );//* Values.SHOOTER_TILT_POSITION_SCALAR);
 
-            if((joy.getRawButton(2) || joy.getRawButton(4))) {
+            if(shooterJoy.getRawButton(4)) {
                 uptake.run(Values.UPTAKE_SPEED);    //Forward
-            } else if(joy.getRawButton(5)){
+            } else if(shooterJoy.getRawButton(5)){
                 uptake.run(-Values.UPTAKE_SPEED);   //Backward
             } else {
                 uptake.stop();                      //Stop
             }
             
-            if(joy.getRawAxis(2) <= -0.1) {
-                intake.reach(joy.getRawAxis(2) );//* Values.INTAKE_ARM_POSITION_SCALAR);    //Up
-            } else if(joy.getRawAxis(2) > 0) {
+            if(shooterJoy.getRawAxis(2) <= -0.1) {
+                intake.reach(shooterJoy.getRawAxis(2) );//* Values.INTAKE_ARM_POSITION_SCALAR);    //Up
+            } else if(shooterJoy.getRawAxis(2) > 0) {
                 intake.reach(0.1);                  //Down
             } else {
                 intake.reach(-0.1);                 //Stop
             }
-            if(joy.getRawButton(8)) {
+            if(shooterJoy.getRawButton(6)) {
                 intake.flip(Values.FLIP_SPEED);     //Forward
-            } else if(joy.getRawButton(9)) {
+            } else if(shooterJoy.getRawButton(7)) {
                 intake.flip(-Values.FLIP_SPEED);    //Backward
             } else {
                 intake.flip(0.0);                   //Stop
