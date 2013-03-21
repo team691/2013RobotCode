@@ -15,7 +15,8 @@ public class Robot extends SimpleRobot {
     boolean running = false;
 
     public void robotInit() {
-        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);  //No Encoders
+        //shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);    //No Encoders
+        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR, Values.SHOOTER_TACHOMETER_SIDECAR, Values.SHOOTER_TACHOMETER, Values.SHOOTER_TACHOMETER_RPM);    //With Tachometer
         /*shooter = new Shooter(
                 Values.SHOOTER_VICTOR_SIDECARS,
                 Values.SHOOTER_VICTORS,

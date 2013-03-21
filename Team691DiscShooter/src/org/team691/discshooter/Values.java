@@ -2,8 +2,9 @@ package org.team691.discshooter;
 
 public class Values {
     
-    public static final double SHOOTER_RPM      = 60.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
-    public static final double SHOOTER_RPM_IDLE = SHOOTER_RPM / 2;
+    public static final double SHOOTER_RPM      = 0.6; //TODO: Change this to best value after prototype! Final because value doesn't change.
+    public static final double SHOOTER_RPM_IDLE = SHOOTER_RPM / 2.0;
+    public static final double SHOOTER_TACHOMETER_RPM = 2000.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
     public static final double UPTAKE_SPEED     = 0.5; //TODO: Change this to best value after prototype! Final because value doesn't change.  
     public static final double FLIP_SPEED       = 0.25; //TODO: Change this to best value after prototype! Final because value doesn't change.  
     
@@ -14,7 +15,8 @@ public class Values {
     public static final int[] SHOOTER_VICTORS            = {SHOOTER_VICTOR, SHOOTER_ACCEL_VICTOR};
     public static final int[] SHOOTER_VICTOR_SIDECARS    = {1, 1};
     
-    public static final int SHOOTER_ENCODER_TACHOMETER   = 1;
+    public static final int SHOOTER_TACHOMETER           = 1;
+    public static final int SHOOTER_TACHOMETER_SIDECAR   = 1;
     
     public static final int SHOOTER_TILT_VICTOR          = 1;
     public static final int SHOOTER_TILT_VICTOR_SIDECAR  = 1;
