@@ -1,5 +1,6 @@
 package org.team691.robot2013;
 
+import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
@@ -15,7 +16,10 @@ public class Shooter {
     private PIDVelocityMotor shooterMotor;
     private PIDVelocityMotor shooterAccelMotor;
     private PIDPositionMotor tiltMotor;
-    private double lastTiltPos = 0;
+    private Counter tachometer;
+    private double tachTarget = 0.0;
+    private long tachTime = 0;
+    private double lastTiltPos = 0.0;
     private int tiltResetCounter = 0;
     private boolean useEncoders = true;
 
@@ -39,6 +43,15 @@ public class Shooter {
         tiltEncoder.setDistancePerPulse(tiltEnc[3]);
         tiltEncoder.start();
         tiltMotor = new PIDPositionMotor("Tilt", tiltVic, tiltEncoder, tiltPosPID, tiltPID);
+    }
+    
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel, int tachSlot, int tachChannel, double targetRPM) {
+        useEncoders = false;
+        shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
+        shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
+        tiltVic = new Victor(tiltSlot, tiltChannel);
+        tachometer = new Counter(tachSlot, tachChannel);
+        tachTarget = targetRPM;
     }
     
     public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel) {
@@ -82,6 +95,14 @@ public class Shooter {
         if(shooterMotor.atTarget() && shooterAccelMotor.atTarget() && useEncoders) {
             return true;
         } else if(useEncoders) {
+            return false;
+        } else if(tachometer != null && Math.abs((tachometer.get() / (System.currentTimeMillis() - tachTime)) - tachTarget) <= 0.05) {
+            tachTime = System.currentTimeMillis();
+            tachometer.reset();
+            return true;
+        } else if (tachometer != null) {
+            tachTime = System.currentTimeMillis();
+            tachometer.reset();
             return false;
         } else {
             return true;

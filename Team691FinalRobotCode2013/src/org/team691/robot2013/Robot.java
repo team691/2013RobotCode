@@ -44,7 +44,8 @@ public class Robot extends SimpleRobot {
         drive.stop();
         scalar = (Values.FR_DRIVE_PID_SCALAR + Values.FL_DRIVE_PID_SCALAR + Values.BR_DRIVE_PID_SCALAR + Values.BL_DRIVE_PID_SCALAR) / 4;
         
-        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);  //No Encoders
+        //shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);    //No Encoders
+        shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR, Values.SHOOTER_TACHOMETER_SIDECAR, Values.SHOOTER_TACHOMETER, Values.SHOOTER_TACHOMETER_RPM);    //With Tachometer
         /*shooter = new Shooter(
                 Values.SHOOTER_VICTOR_SIDECARS,
                 Values.SHOOTER_VICTORS,
@@ -58,7 +59,7 @@ public class Robot extends SimpleRobot {
         );*/ //With Encoders
         shooter.stop();
         
-        uptake = new Uptake(Values.UPTAKE_VICTOR_SIDECAR, Values.UPTAKE_VICTOR);
+        uptake = new Uptake(Values.UPTAKE_VICTOR_SIDECAR, Values.UPTAKE_VICTOR, Values.UPTAKE_GATEKEEPER_SIDECAR, Values.UPTAKE_GATEKEEPER);
         uptake.stop();
         
         intake = new Intake(
@@ -66,15 +67,15 @@ public class Robot extends SimpleRobot {
                 Values.INTAKE_ARM_VICTOR,
                 Values.INTAKE_WRIST_VICTOR_SIDECAR,
                 Values.INTAKE_WRIST_VICTOR
-        );   //No Encoders
+        );    //No Encoders
         /*intake = new Intake(
                 Values.INTAKE_ARM_VICTOR_SIDECAR,
                 Values.INTAKE_ARM_VICTOR,
                 Values.INTAKE_ARM_ENCODER,
                 Values.INTAKE_ARM_PID,
-                Values.INTAKE_WRIST_VICTOR_SIDECAR,
-                Values.INTAKE_WRIST_VICTOR
-        ); */   //With Encoders
+                Values.INTAKE_WRIST_RELAY_SIDECAR,
+                Values.INTAKE_WRIST_RELAY
+        );*/   //With Encoders
         intake.stop();
     }
     
@@ -126,18 +127,21 @@ public class Robot extends SimpleRobot {
             } else {
                 shooter.shoot(Values.SHOOTER_RPM_IDLE / 100);   //Idle
             }
-            shooter.tilt(shooterJoy.getRawAxis(3));//* Values.SHOOTER_TILT_POSITION_SCALAR);
+            if(shooterJoy.getRawButton(11)) {
+                while(!shooter.resetTilt()) {}
+            }
+            shooter.tilt(shooterJoy.getRawAxis(3) );//* Values.SHOOTER_TILT_POSITION_SCALAR);
 
-            if(shooterJoy.getRawButton(2) || shooterJoy.getRawButton(4)) {
-                uptake.feed(Values.UPTAKE_SPEED);   //Forward
+            if((shooterJoy.getRawButton(2) || shooterJoy.getRawButton(4))) {
+                uptake.run(Values.UPTAKE_SPEED);    //Forward
             } else if(shooterJoy.getRawButton(5)){
-                uptake.feed(-Values.UPTAKE_SPEED);  //Backward
+                uptake.run(-Values.UPTAKE_SPEED);   //Backward
             } else {
                 uptake.stop();                      //Stop
             }
             
             if(shooterJoy.getRawAxis(2) <= -0.1) {
-                intake.reach(shooterJoy.getRawAxis(2));//* Values.INTAKE_ARM_POSITION_SCALAR);    //Up
+                intake.reach(shooterJoy.getRawAxis(2) );//* Values.INTAKE_ARM_POSITION_SCALAR);    //Up
             } else if(shooterJoy.getRawAxis(2) > 0) {
                 intake.reach(0.1);                  //Down
             } else {
