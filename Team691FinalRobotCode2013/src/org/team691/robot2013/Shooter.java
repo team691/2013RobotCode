@@ -1,6 +1,7 @@
 package org.team691.robot2013;
 
 import edu.wpi.first.wpilibj.Counter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
@@ -16,15 +17,19 @@ public class Shooter {
     private PIDVelocityMotor shooterMotor;
     private PIDVelocityMotor shooterAccelMotor;
     private PIDPositionMotor tiltMotor;
+    private DigitalInput topLimit;
+    private DigitalInput bottomLimit;
     private Counter tachometer;
     private double tachTarget = 0.0;
     private long tachTime = 0;
     private double lastTiltPos = 0.0;
     private int tiltResetCounter = 0;
     private boolean useEncoders = true;
+    private boolean useLimits = true;
 
-    public Shooter(int[] shooterSlot, int[] shooterChannel, int[][] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPosPID, double[] tiltPID) {
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int[][] shooterEnc, double[] shooterPID, int tiltSlot, int tiltChannel, int[] tiltEnc, double[] tiltPosPID, double[] tiltPID, int[] tiltLimits) {
         useEncoders = true;
+        useLimits = true;
         
         shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
         shooterEncoder = new Encoder(shooterEnc[0][0], shooterEnc[0][1], shooterEnc[0][0], shooterEnc[0][2], (shooterEnc[0][4] == 1 ? true : false));
@@ -43,56 +48,93 @@ public class Shooter {
         tiltEncoder.setDistancePerPulse(tiltEnc[3]);
         tiltEncoder.start();
         tiltMotor = new PIDPositionMotor("Tilt", tiltVic, tiltEncoder, tiltPosPID, tiltPID);
+        
+        topLimit = new DigitalInput(tiltLimits[0], tiltLimits[1]);
+        bottomLimit = new DigitalInput(tiltLimits[0], tiltLimits[2]);
     }
     
-    public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel, int tachSlot, int tachChannel, double targetRPM) {
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel, int[] tiltLimits, int tachSlot, int tachChannel, double targetRPM) {
         useEncoders = false;
+        useLimits = true;
         shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
         shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
         tiltVic = new Victor(tiltSlot, tiltChannel);
+        topLimit = new DigitalInput(tiltLimits[0], tiltLimits[1]);
+        bottomLimit = new DigitalInput(tiltLimits[0], tiltLimits[2]);
         tachometer = new Counter(tachSlot, tachChannel);
         tachTarget = targetRPM;
     }
     
+    public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel, int[] tiltLimits) {
+        useEncoders = false;
+        useLimits = true;
+        shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
+        shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
+        tiltVic = new Victor(tiltSlot, tiltChannel);
+        topLimit = new DigitalInput(tiltLimits[0], tiltLimits[1]);
+        bottomLimit = new DigitalInput(tiltLimits[0], tiltLimits[2]);
+    }
+    
     public Shooter(int[] shooterSlot, int[] shooterChannel, int tiltSlot, int tiltChannel) {
         useEncoders = false;
+        useLimits = false;
         shooterVic = new Victor(shooterSlot[0], shooterChannel[0]);
         shooterAccelVic = new Victor(shooterSlot[1], shooterChannel[1]);
         tiltVic = new Victor(tiltSlot, tiltChannel);
     }
     
-    public void update(double shooterSpeed, double tiltPos) {
+    public void update(double shooterSpeed,double accelSpeed, double tiltPos) {
         if(useEncoders) {
             shooterMotor.run(shooterSpeed);
-            shooterAccelMotor.run(shooterSpeed);
+            shooterAccelMotor.run(accelSpeed);
             tiltMotor.run(tiltPos);
         } else {
             shooterVic.set(shooterSpeed);
-            shooterAccelVic.set(shooterSpeed);
+            shooterAccelVic.set(accelSpeed);
             tiltVic.set(tiltPos);
         }
     }
     
-    public void shoot(double shooterSpeed) {
+    public void shoot(double shooterSpeed, double accelSpeed) {
         if(useEncoders) {
             shooterMotor.run(shooterSpeed);
-            shooterAccelMotor.run(shooterSpeed);
+            shooterAccelMotor.run(accelSpeed);
         } else {
             shooterVic.set(shooterSpeed);
-            shooterAccelVic.set(shooterSpeed);
+            shooterAccelVic.set(accelSpeed);
         }
     }
     
-    public void tilt(double tiltPos){
+    public void tilt(double tiltPos, boolean force){
         if(useEncoders) {
-            tiltMotor.run(tiltPos);   
+            if(useLimits) {
+                if(tiltPos >= 0 && !topLimit.get()) {
+                    tiltMotor.run(tiltPos);
+                } else if(tiltPos < 0 && !bottomLimit.get()) {
+                    tiltMotor.run(tiltPos);
+                } else if(force) {
+                    tiltMotor.run(tiltPos);
+                }
+            } else {
+                tiltMotor.run(tiltPos);
+            }
         } else {
-            tiltVic.set(tiltPos);
+            if(useLimits) {
+                if(tiltPos >= 0 && !topLimit.get()) {
+                    tiltVic.set(tiltPos);
+                } else if(tiltPos < 0 && !bottomLimit.get()) {
+                    tiltVic.set(tiltPos);
+                } else if(force) {
+                    tiltVic.set(tiltPos);
+                }
+            } else {
+                tiltVic.set(tiltPos);
+            }
         }
     }
     
     public boolean isReady() {
-        if(shooterMotor.atTarget() && shooterAccelMotor.atTarget() && useEncoders) {
+        if(useEncoders && shooterMotor.atTarget() && shooterAccelMotor.atTarget()) {
             return true;
         } else if(useEncoders) {
             return false;

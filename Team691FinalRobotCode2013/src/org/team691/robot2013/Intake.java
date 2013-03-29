@@ -29,12 +29,13 @@ public class Intake {
         wrist = new Victor(wristSlot, wristChannel);
     }
     
-    public void update(double reach) {
+    public void update(double reach, double flip) {
         if(useEncoders) {
             arm.run(reach);            
         } else {
             armVic.set(0.0);
         }
+        wrist.set(flip);
     }
     
     public void reach(double pos) {
@@ -50,6 +51,11 @@ public class Intake {
     }
     
     public void stop() {
-        wrist.set(0.0);
+        if(useEncoders) {
+            wrist.set(0.0);
+        } else {
+            armVic.set(0.0);
+            wrist.set(0.0);
+        }
     }
 }
