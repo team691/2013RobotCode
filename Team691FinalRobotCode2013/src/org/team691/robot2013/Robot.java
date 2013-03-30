@@ -168,7 +168,7 @@ public class Robot extends SimpleRobot {
             /*if(shooterJoy.getRawButton(10)) {
                 while(!shooter.resetTilt()) {}
             }*/
-            shooter.tilt(shooterJoy.getRawAxis(1), shooterJoy.getRawButton(11));//* Values.SHOOTER_TILT_POSITION_SCALAR);
+            shooter.tilt(shooterJoy.getRawAxis(2), shooterJoy.getRawButton(11));//* Values.SHOOTER_TILT_POSITION_SCALAR);
             
             if(shooterJoy.getRawButton(3)) {
                 uptake.feed();                      //Feed Disc
