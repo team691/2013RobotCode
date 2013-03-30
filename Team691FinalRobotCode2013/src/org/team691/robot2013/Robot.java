@@ -139,7 +139,7 @@ public class Robot extends SimpleRobot {
             } else {
                 clockwise = driveJoy.getRawAxis(3);
                 if(clockwise <= 0.5) {
-                    clockwise *= 0.75;
+                    clockwise *= 0.5;
                 } else {
                     clockwise *= Math.abs(clockwise);
                 }
