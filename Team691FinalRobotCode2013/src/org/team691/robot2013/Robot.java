@@ -28,10 +28,7 @@ public class Robot extends SimpleRobot {
     /**
      * This function is called once when the robot turns on.
      */
-    public void robotInit() {
-        driveJoy = new Joystick(Values.DRIVE_JOYSTICK);
-        shooterJoy = new Joystick(Values.SHOOTER_JOYSTICK);
-        
+    public void robotInit() {        
         //drive = new Meccanum(Values.DRIVE_VICTOR_SIDECARS, Values.DRIVE_VICTORS); //No encoders
         drive = new Meccanum(
                         Values.DRIVE_VICTOR_SIDECARS,
