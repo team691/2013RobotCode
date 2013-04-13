@@ -1,47 +1,46 @@
 package org.team691.discshooter;
 
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Victor;
 
 public class Uptake {
     
-    private SpeedController spiral;
+    private Relay spiral;
     private Servo gatekeeper;
     
-    public Uptake(int spiralSlot, int spiralChannel, int gatelot, int gateChannel) {
-        spiral = new Victor(spiralSlot, spiralChannel);
-        gatekeeper = new Servo(gatelot, gateChannel);
+    public Uptake(int spiralSlot, int spiralChannel, int gateSlot, int gateChannel) {
+        spiral = new Relay(spiralSlot, spiralChannel);
+        gatekeeper = new Servo(gateSlot, gateChannel);
     }
     
-    public void update(double speed, boolean open) {
-        spiral.set(speed);
+    public void update(Relay.Value direction, boolean open) {
+        spiral.set(direction);
         if(open) {
-            gatekeeper.setAngle(0.0);
+            gatekeeper.setAngle(70.0);
         } else {
-            gatekeeper.setAngle(45.0);
+            gatekeeper.setAngle(180.0);
         }
     }
     
-    public void feed(double speed) {
-        gatekeeper.setAngle(0.0);
-        spiral.set(speed);
+    public void feed() {
+        gatekeeper.setAngle(70.0);
+        spiral.set(Relay.Value.kForward);
     }
     
-    public void run(double speed) {
-        spiral.set(speed);
+    public void run(Relay.Value direction) {
+        spiral.set(direction);
     }
     
     public void open() {
-        gatekeeper.setAngle(0.0);
+        gatekeeper.setAngle(70.0);
     }
     
     public void close() {
-        gatekeeper.setAngle(45.0);
+        gatekeeper.setAngle(180.0);
     }
     
     public void stop() {
-        spiral.set(0.0);
-        gatekeeper.setAngle(45.0);
+        spiral.set(Relay.Value.kOff);
+        gatekeeper.setAngle(180.0);
     }
 }
