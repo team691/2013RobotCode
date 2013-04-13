@@ -72,12 +72,12 @@ public class Values {
     public static final double[] BL_DRIVE_PID  = {BL_DRIVE_PID_KP, BL_DRIVE_PID_KI, BL_DRIVE_PID_KD, BL_DRIVE_PID_SCALAR};
     public static final double[][] DRIVE_PID   = {FR_DRIVE_PID, FL_DRIVE_PID, BR_DRIVE_PID, BL_DRIVE_PID};
     
-    public static final double SHOOTER_RPM              = 0.6; //TODO: Change this to best value after prototype! Final because value doesn't change.
-    public static final double SHOOTER_ACCEL_RPM        = 1.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
+    public static final double SHOOTER_RPM              = 0.6;
+    public static final double SHOOTER_ACCEL_RPM        = 1.0;
     public static final double SHOOTER_RPM_IDLE         = SHOOTER_RPM / 2.0;
     public static final double SHOOTER_ACCEL_RPM_IDLE   = SHOOTER_ACCEL_RPM / 2.0;
-    public static final double SHOOTER_TACHOMETER_RPM   = 2000.0; //TODO: Change this to best value after prototype! Final because value doesn't change.
-    public static final double FLIP_SPEED               = 0.5; //TODO: Change this to best value after prototype! Final because value doesn't change.
+    public static final double SHOOTER_TACHOMETER_RPM   = 2000.0;
+    public static final double FLIP_SPEED               = 0.5;
     
     public static final int SHOOTER_VICTOR               = 8;
     public static final int SHOOTER_ACCEL_VICTOR         = 6;
