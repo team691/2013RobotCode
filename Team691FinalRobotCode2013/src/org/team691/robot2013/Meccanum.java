@@ -94,7 +94,7 @@ public class Meccanum {
 
     public void update(double forward, double right, double clockwise) {
         //Figure out motor speeds
-        frVel = -(forward + right - clockwise); //0--   /TODO: Check negatives for final robot!
+        frVel = -(forward + right - clockwise); //0--
         flVel = (forward - right + clockwise);  //0++
         brVel = -(forward - right - clockwise); //0+-
         blVel = (forward + right + clockwise);  //0-+
