@@ -19,7 +19,7 @@ public class Uptake {
         if(open) {
             gatekeeper.setAngle(0.0);
         } else {
-            gatekeeper.setAngle(90.0);
+            gatekeeper.setAngle(45.0);
         }
     }
     
@@ -37,11 +37,11 @@ public class Uptake {
     }
     
     public void close() {
-        gatekeeper.setAngle(90.0);
+        gatekeeper.setAngle(45.0);
     }
     
     public void stop() {
         spiral.set(0.0);
-        gatekeeper.setAngle(90.0);
+        gatekeeper.setAngle(45.0);
     }
 }
