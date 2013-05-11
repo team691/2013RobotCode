@@ -73,7 +73,7 @@ public class Values {
     public static final double[][] DRIVE_PID   = {FR_DRIVE_PID, FL_DRIVE_PID, BR_DRIVE_PID, BL_DRIVE_PID};
     
     public static final double SHOOTER_RPM              = 0.6;
-    public static final double SHOOTER_ACCEL_RPM        = 1.0;
+    public static final double SHOOTER_ACCEL_RPM        = 0.9;
     public static final double SHOOTER_RPM_IDLE         = SHOOTER_RPM / 2.0;
     public static final double SHOOTER_ACCEL_RPM_IDLE   = SHOOTER_ACCEL_RPM / 2.0;
     public static final double SHOOTER_TACHOMETER_RPM   = 2000.0;

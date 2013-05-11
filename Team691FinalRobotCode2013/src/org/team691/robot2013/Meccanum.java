@@ -136,6 +136,20 @@ public class Meccanum {
             blVic.set(blVel);
         }
     }
+    
+    public void tank(double right, double left) {
+        if(useEncoders) {
+            fr.run(right);
+            fl.run(left);
+            br.run(right);
+            bl.run(left);
+        } else {
+            frVic.set(right);
+            flVic.set(left);
+            brVic.set(right);
+            blVic.set(left);
+        }
+    }
 
     public void stop() {
         if(useEncoders) {

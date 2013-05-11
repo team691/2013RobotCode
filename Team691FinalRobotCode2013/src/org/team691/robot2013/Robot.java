@@ -3,6 +3,7 @@ package org.team691.robot2013;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.SimpleRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends SimpleRobot {
     
@@ -16,6 +17,7 @@ public class Robot extends SimpleRobot {
     double right = 0.0;
     double clockwise = 0.0;
     double scalar = 0.0;
+    boolean joystickDrive = true;
     
     //Shooter, Uptake, & Intake
     Shooter shooter;
@@ -41,6 +43,10 @@ public class Robot extends SimpleRobot {
         );  //With encoders
         drive.stop();
         scalar = (Values.FR_DRIVE_PID_SCALAR + Values.FL_DRIVE_PID_SCALAR + Values.BR_DRIVE_PID_SCALAR + Values.BL_DRIVE_PID_SCALAR) / 4;
+        if(!joystickDrive) {
+            SmartDashboard.putNumber("WkwFrcLeftSpeed", 0.0);
+            SmartDashboard.putNumber("WkwFrcRightSpeed", 0.0);
+        }
         
         shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR);    //No Encoders, No Limits
         //shooter = new Shooter(Values.SHOOTER_VICTOR_SIDECARS, Values.SHOOTER_VICTORS, Values.SHOOTER_TILT_VICTOR_SIDECAR, Values.SHOOTER_TILT_VICTOR, Values.SHOOTER_TILT_LIMITS);    //No Encoders, With Limits
@@ -118,33 +124,39 @@ public class Robot extends SimpleRobot {
      */
     public void operatorControl() {
         while(isEnabled() && isOperatorControl()) {
-            if(Math.abs(driveJoy.getRawAxis(2)) < 0.2) {
-                forward = 0.0;
-            } else {
-                forward = driveJoy.getRawAxis(2);
-                forward *= Math.abs(forward);
-                forward *= scalar;
-            }
-            if(Math.abs(driveJoy.getRawAxis(1)) < 0.2) {
-                right = 0.0;
-            } else {
-                right = driveJoy.getRawAxis(1);
-                right *= Math.abs(right);
-                right *= scalar;
-            }
-            if(Math.abs(driveJoy.getRawAxis(3)) < 0.2) {
-                clockwise = 0.0;
-            } else {
-                clockwise = driveJoy.getRawAxis(3);
-                if(clockwise <= 0.5) {
-                    clockwise *= 0.5;
+            if(joystickDrive) {
+                if(Math.abs(driveJoy.getRawAxis(2)) < 0.2) {
+                    forward = 0.0;
                 } else {
-                    clockwise *= Math.abs(clockwise);
+                    forward = driveJoy.getRawAxis(2);
+                    forward *= Math.abs(forward);
+                    forward *= scalar;
                 }
-                clockwise *= scalar;
-            }
-            drive.update(forward, right, -clockwise);
+                if(Math.abs(driveJoy.getRawAxis(1)) < 0.2) {
+                    right = 0.0;
+                } else {
+                    right = driveJoy.getRawAxis(1);
+                    right *= Math.abs(right);
+                    right *= scalar;
+                }
+                if(Math.abs(driveJoy.getRawAxis(3)) < 0.2) {
+                    clockwise = 0.0;
+                } else {
+                    clockwise = driveJoy.getRawAxis(3);
+                    if(clockwise <= 0.5) {
+                        clockwise *= 0.5;
+                    } else {
+                        clockwise *= Math.abs(clockwise);
+                    }
+                    clockwise *= scalar;
+                    drive.update(forward, right, -clockwise);
                        //Forward  Right  Clockwise
+                }
+            } else {
+                double leftSpeed = SmartDashboard.getNumber("WkwFrcLeftSpeed");
+                double rightSpeed = SmartDashboard.getNumber("WkwFrcRightSpeed");
+                drive.tank(rightSpeed, leftSpeed);
+            }
             
             /*if(driveJoy.getRawButton(1)) {
                 drive.update(1.0, 0.0, 0.0);
